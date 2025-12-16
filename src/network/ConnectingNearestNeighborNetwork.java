@@ -6,7 +6,6 @@ import rand.randomGenerator;
 
 public class ConnectingNearestNeighborNetwork extends Network {
     private double p; // prob of setting potential edge as actual edge
-    private Random rand = randomGenerator.rand;
     private Set<Edge> potentialEdges;
 
     private static class Edge {
@@ -50,10 +49,10 @@ public class ConnectingNearestNeighborNetwork extends Network {
         setEdge(2, 0, 1);
 
         while (currentSize < getSize()) {
-            if (rand.nextDouble() < 1 - this.p) {
+            if (randomGenerator.get().nextDouble() < 1 - this.p) {
                 // 新しいノードを追加
                 int newNode = currentSize++;
-                int v = rand.nextInt(newNode);
+                int v = randomGenerator.get().nextInt(newNode);
                 setEdge(newNode, v, 1);
 
                 for (int neighbor = 0; neighbor < newNode; neighbor++) {
@@ -62,22 +61,22 @@ public class ConnectingNearestNeighborNetwork extends Network {
                     }
                 }
             } else {
-                if (rand.nextDouble() < 1 - r) { // CNN with random links (CNNR)
+                if (randomGenerator.get().nextDouble() < 1 - r) { // CNN with random links (CNNR)
                     // convert potential edge to actual edge
                     if (!potentialEdges.isEmpty()) {
                         List<Edge> list = new ArrayList<>(potentialEdges);
 
                         list.sort(Comparator.comparingInt((Edge e) -> e.from).thenComparingInt(e -> e.to));
-                        Edge edge = list.get(rand.nextInt(list.size()));
+                        Edge edge = list.get(randomGenerator.get().nextInt(list.size()));
                         setEdge(edge.from, edge.to, 1);
                         potentialEdges.remove(edge);
                     }
                 } else {
                     // add link randomly
-                    int a = rand.nextInt(currentSize);
+                    int a = randomGenerator.get().nextInt(currentSize);
                     int b;
                     do {
-                        b = rand.nextInt(currentSize);
+                        b = randomGenerator.get().nextInt(currentSize);
                     } while (a == b || adjacencyMatrix[a][b] > 0);
 
                     setEdge(a, b, 1);
@@ -88,7 +87,7 @@ public class ConnectingNearestNeighborNetwork extends Network {
 
         /// exp 
         /*for(int i = 0; i < getSize(); i++){
-            if(rand.nextDouble() < 0.1){
+            if(randomGenerator.get().nextDouble() < 0.1){
                 setEdge(i, 0, 1);
             }
         }*/
@@ -114,10 +113,10 @@ public class ConnectingNearestNeighborNetwork extends Network {
         }
 
         if (candidates.isEmpty()) {
-            return rand.nextInt(maxIndex);
+            return randomGenerator.get().nextInt(maxIndex);
         }
 
-        return candidates.get(rand.nextInt(candidates.size()));
+        return candidates.get(randomGenerator.get().nextInt(candidates.size()));
     }
 
 }

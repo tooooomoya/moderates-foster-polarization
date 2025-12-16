@@ -11,7 +11,6 @@ public class Agent {
     private double bc; // Bounded Confidence
     private double intrinsicOpinion;
     private final int NUM_OF_AGENTS = Const.NUM_OF_SNS_USER;
-    private static final Random rand = randomGenerator.rand;
     private int toPost; // % of posts at a step
     private int numOfPosts; // maximum % of posts that an agent can read at a step
     private int opinionClass;
@@ -35,7 +34,7 @@ public class Agent {
     public Agent(int agentID) {
         this.id = agentID;
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
-        this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, rand.nextGaussian() * 0.6)); // norm dist
+        this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * 0.6)); // norm dist
         this.opinion = this.intrinsicOpinion;
         this.bc = Const.BOUNDED_CONFIDENCE; // dynamic not static
         this.postProb = Const.INITIAL_PP;
@@ -339,7 +338,7 @@ public class Agent {
 
         // choose 1 post randomly from candidates to like
         if (!candidates.isEmpty()) {
-            Post likedPost = candidates.get(rand.nextInt(candidates.size()));
+            Post likedPost = candidates.get(randomGenerator.get().nextInt(candidates.size()));
             likedPost.receiveLike();
             return likedPost;
         } else {
@@ -362,7 +361,7 @@ public class Agent {
 
         if (!candidates.isEmpty()) {
             for (Post post : candidates) {
-                if (rand.nextDouble() < this.repostProb) {
+                if (randomGenerator.get().nextDouble() < this.repostProb) {
                     post.receiveLike();
                     repostedPostList.add(post);
                 }
@@ -384,8 +383,8 @@ public class Agent {
             }
         }
 
-        if (!candidates.isEmpty() && rand.nextDouble() < Const.FOLLOW_PROB) {
-            int followId = candidates.get(rand.nextInt(candidates.size()));
+        if (!candidates.isEmpty() && randomGenerator.get().nextDouble() < Const.FOLLOW_PROB) {
+            int followId = candidates.get(randomGenerator.get().nextInt(candidates.size()));
             this.followList[followId] = true;
 
             return followId;
@@ -405,7 +404,7 @@ public class Agent {
         }
 
         List<Integer> dislikeUser = new ArrayList<>();
-        if (rand.nextDouble() > Const.UNFOLLOW_PROB) {
+        if (randomGenerator.get().nextDouble() > Const.UNFOLLOW_PROB) {
             return -1;
         }
         for (Post post : this.feed) {
@@ -419,7 +418,7 @@ public class Agent {
             }
         }
         if (dislikeUser.size() > 0) { // if there's nobody to unfollow, agents can also "block" others
-            this.unfollowList[dislikeUser.get(rand.nextInt(dislikeUser.size()))] = true;
+            this.unfollowList[dislikeUser.get(randomGenerator.get().nextInt(dislikeUser.size()))] = true;
         }
         return -1;
     }

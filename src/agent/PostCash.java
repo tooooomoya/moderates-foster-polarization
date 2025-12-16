@@ -1,13 +1,11 @@
 package agent;
 
-import java.util.Random;
 import rand.randomGenerator;
 
 public class PostCash {
     private int maxNumOfPostCash;
     private Post[] postQueue;
     private int size;
-    private static final Random rand = randomGenerator.rand;
 
     public PostCash(int maxNumOfPostCash){
         this.maxNumOfPostCash = maxNumOfPostCash;
@@ -24,7 +22,7 @@ public class PostCash {
 
     public void shuffle() {
         for (int i = size - 1; i > 0; i--) {
-            int j = rand.nextInt(i + 1);
+            int j = randomGenerator.get().nextInt(i + 1);
             Post temp = postQueue[i];
             postQueue[i] = postQueue[j];
             postQueue[j] = temp;

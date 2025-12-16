@@ -5,18 +5,17 @@ import agent.*;
 import analysis.*;
 import constants.Const;
 import gephi.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import network.*;
 import rand.randomGenerator;
 import writer.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class OpinionDynamics {
     private final int t = Const.MAX_SIMULATION_STEP;
@@ -32,7 +31,6 @@ public class OpinionDynamics {
     private RepostVisualize repostGephi;
     private double connectionProbability = Const.CONNECTION_PROB_OF_RANDOM_NW;
     private AdminOptim admin;
-    private static final Random rand = randomGenerator.rand;
     private int[][] repostNetwork;
 
     // constructor
@@ -77,7 +75,7 @@ public class OpinionDynamics {
         List<Double> opinionList = new ArrayList<>();
         for (double op : opinions)
             opinionList.add(op);
-        Collections.shuffle(opinionList, rand);
+        Collections.shuffle(opinionList, randomGenerator.get());
 
         for (int j = 0; j < opinions.length; j++) {
             agentSet[j].setIntrinsicOpinion(opinionList.get(j));
@@ -134,7 +132,7 @@ public class OpinionDynamics {
             List<Post> postList = new ArrayList<>();
 
             List<Agent> shuffledAgents = new ArrayList<>(Arrays.asList(agentSet));
-            Collections.shuffle(shuffledAgents, rand);
+            Collections.shuffle(shuffledAgents, randomGenerator.get());
 
             /*if(step == 1000) {
                 List<Integer> targetUsers = admin.getManipulationTarget(agentSet);
@@ -151,7 +149,7 @@ public class OpinionDynamics {
                 agent.resetUsed();
 
                 // decide whether to use platform at this step
-                if (rand.nextDouble() > agent.getuseProb()) {
+                if (randomGenerator.get().nextDouble() > agent.getuseProb()) {
                     continue;
                 }
                 agent.setUsed();
@@ -180,7 +178,7 @@ public class OpinionDynamics {
                 int unfollowedId = agent.unfollow();
 
                 /////// post
-                if (rand.nextDouble() < agent.getPostProb()) {
+                if (randomGenerator.get().nextDouble() < agent.getPostProb()) {
                     Post post = agent.makePost(step);
                     for (Agent otherAgent : agentSet) {
                         if (W[otherAgent.getId()][agentId] > 0.00) {
@@ -238,13 +236,9 @@ public class OpinionDynamics {
     }
 
     public static void main(String[] args) {
-        int seed = 0;
 
-        if (args.length > 0) {
-            seed = Integer.parseInt(args[0]);
-        } else {
-            seed = 0;
-        }
+        int seed = Integer.parseInt(args[0]);
+        randomGenerator.init(seed);
 
         Const.RANDOM_SEED = seed;
         Const.RESULT_FOLDER_PATH = "results/run_" + seed;

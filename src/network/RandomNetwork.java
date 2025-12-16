@@ -1,12 +1,10 @@
 package network;
 
 import agent.Agent;
-import java.util.Random;
 import rand.randomGenerator;
 
 public class RandomNetwork extends Network {
-    private double connectionProbability; 
-    private Random rand = randomGenerator.rand;
+    private double connectionProbability;
 
     // Constructor
     public RandomNetwork(int size, double connectionProbability) {
@@ -21,8 +19,8 @@ public class RandomNetwork extends Network {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (i != j && rand.nextDouble() < connectionProbability) {
-                    int posts = rand.nextInt(5) + 1; 
+                if (i != j && randomGenerator.get().nextDouble() < connectionProbability) {
+                    int posts = randomGenerator.get().nextInt(5) + 1; 
                     setEdge(i, j, posts);
                     tempMatrix[i][j] += posts;
                 }

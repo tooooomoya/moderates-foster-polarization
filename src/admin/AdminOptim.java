@@ -87,7 +87,7 @@ public class AdminOptim {
             }
         }
 
-        Collections.shuffle(tempFeed, randomGenerator.rand);
+        Collections.shuffle(tempFeed, randomGenerator.get());
         for (Post post : tempFeed) {
             agentSet[userId].addPostToFeed(post);
         }
