@@ -33,3 +33,11 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 ## Python virtual environment
 
 For using analysis python files, our requirments.txt may be useful
+
+## Pararell Processing
+
+Using shell file (run.sh) can make pararell processing possible. By rewiriting run.sh, you can change seeds to simulate concurrently. 
+
+```
+bash run.sh
+```

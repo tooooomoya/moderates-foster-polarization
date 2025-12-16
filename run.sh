@@ -1,43 +1,62 @@
 #!/bin/bash
+#!/bin/bash
+set -euo pipefail
+
+cleanup() {
+    echo "Interrupted. Cleaning up..."
+    pkill -f OpinionDynamics || true
+    exit 1
+}
+trap cleanup SIGINT SIGTERM
 
 # ================================
 # 1. コンパイル
 # ================================
 echo "Compiling Java sources..."
-javac -cp "$(find lib -name '*.jar' | tr '\n' ':')" -d bin src/**/*.java
 
-if [ $? -ne 0 ]; then
-    echo "Compilation failed. Stop."
-    exit 1
-fi
+LIBCP="$(find lib -name '*.jar' | tr '\n' ':')"
+
+rm -rf bin
+mkdir -p bin
+
+javac -cp "$LIBCP" -d bin src/**/*.java
+
 echo "Compilation finished."
-
 
 # ================================
 # 2. 並列実行設定
 # ================================
-NUM_RUNS=10   # 0～9 の10回
+NUM_RUNS=10          # seed = 0..9
+MAX_PARALLEL=12       # ★ 最大並列数（重要）
+JAVA_HEAP="2g"       # ★ 1プロセスあたりの最大ヒープ
 LOGDIR="logs"
 
-mkdir -p $LOGDIR
+mkdir -p "$LOGDIR"
 
-echo "Starting $NUM_RUNS parallel simulations..."
-
+echo "Starting $NUM_RUNS simulations (max parallel = $MAX_PARALLEL)..."
 
 # ================================
-# 3. 並列実行ループ（Seed固定）
+# 3. 並列実行（制御付き）
 # ================================
-for seed in $(seq 0 9); do
-    echo "  Run with seed=$seed"
+run_one() {
+    local seed=$1
+    local logfile="${LOGDIR}/run_${seed}.log"
 
-    java -cp "$(find lib -name '*.jar' | tr '\n' ':'):bin" dynamics.OpinionDynamics $seed \
-        > "${LOGDIR}/run_${seed}.log" &
+    echo "[START] seed=$seed $(date)" >> "$logfile"
 
-    # プロセスを密集して起動しないように少し待つ
-    sleep 0.1
-done
+    java -Xmx${JAVA_HEAP} \
+         -XX:+ExitOnOutOfMemoryError \
+         -cp "${LIBCP}:bin" \
+         dynamics.OpinionDynamics "$seed" \
+         >> "$logfile" 2>&1
 
-# 全部終わるまで待機
-wait
+    echo "[END]   seed=$seed $(date)" >> "$logfile"
+}
+
+export -f run_one
+export LIBCP JAVA_HEAP LOGDIR
+
+seq 0 $((NUM_RUNS - 1)) \
+  | xargs -n 1 -P "$MAX_PARALLEL" -I {} bash -c 'run_one "$@"' _ {}
 
 echo "All simulations completed!"
