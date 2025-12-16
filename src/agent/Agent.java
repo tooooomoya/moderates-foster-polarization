@@ -314,10 +314,10 @@ public class Agent {
 
         //// exp 
         
-        /*if(this.target && this.timeStep > 2000) { // extremists
+        if(this.id < 3 && this.intrinsicOpinion == 0.0) { // extremists
             this.postProb = 0.0;
             this.repostProb = 0.0;
-        }*/
+        }
         
         ////
 
