@@ -15,6 +15,8 @@ import java.util.Random;
 import network.*;
 import rand.randomGenerator;
 import writer.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class OpinionDynamics {
     private final int t = Const.MAX_SIMULATION_STEP;
@@ -236,21 +238,63 @@ public class OpinionDynamics {
     }
 
     public static void main(String[] args) {
-        Instant start = Instant.now();
+        int seed = 0;
 
+        if (args.length > 0) {
+            seed = Integer.parseInt(args[0]);
+        } else {
+            seed = 0;
+        }
+
+        Const.RANDOM_SEED = seed;
+        Const.RESULT_FOLDER_PATH = "results/run_" + seed;
+
+        String[] subfolders = {
+            "clusterings",
+            "degrees",
+            "figures",
+            "GEXF",
+            "metrics",
+            "opinion",
+            "posts"
+        };
+
+        try {
+            Path resultDir = Path.of(Const.RESULT_FOLDER_PATH);
+            if (!Files.exists(resultDir)) {
+                Files.createDirectories(resultDir);
+            }
+
+            // サブフォルダ作成
+            for (String sub : subfolders) {
+                Path subDir = resultDir.resolve(sub);
+                if (!Files.exists(subDir)) {
+                    Files.createDirectories(subDir);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to create result folders: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        Instant start = Instant.now();
+        
         OpinionDynamics simulator = new OpinionDynamics();
         simulator.evolve();
 
         Instant end = Instant.now();
 
         Duration timeElapsed = Duration.between(start, end);
+        long s = timeElapsed.getSeconds();
+        long h = s / 3600;
+        long m = (s % 3600) / 60;
+        long sec = s % 60;
+
+        System.out.printf("Elapsed time:   %02d:%02d:%02d\n", h, m, sec);
 
         // print some major information about the simulation parameter
 
         simulator.errorReport();
-
-        System.out.println("Start time:     " + start);
-        System.out.println("End time:       " + end);
-        System.out.println("Elapsed time:   " + timeElapsed.toMillis() + " ms");
     }
 }

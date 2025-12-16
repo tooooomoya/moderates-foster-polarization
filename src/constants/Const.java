@@ -5,7 +5,7 @@ public class Const {
     public static final int MAX_SIMULATION_STEP = 10000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
-    public static final int RANDOM_SEED = 0;
+    public static int RANDOM_SEED = 0;
 
     // Admin feedback parameter
     public static final int MAX_RECOMMENDATION_POST_LENGTH = 100;
@@ -67,7 +67,7 @@ public class Const {
     "feedPostOpinionVar_1", "feedPostOpinionVar_2", "feedPostOpinionVar_3", "feedPostOpinionVar_4",
     "cRateMean_0", "cRateMean_1", "cRateMean_2", "cRateMean_3", "cRateMean_4", "cRateVar_0", "cRateVar_1", "cRateVar_2", "cRateVar_3", "cRateVar_4", 
     "highComfortRateNum_0", "highComfortRateNum_1", "highComfortRateNum_2", "highComfortRateNum_3", "highComfortRateNum_4"};
-    public static final String RESULT_FOLDER_PATH = "results";
+    public static String RESULT_FOLDER_PATH = "results";
     public static final int NUM_OF_BINS_OF_POSTS = 5; // % of bins of opinions in posts for analysis
     public static final int NUM_OF_BINS_OF_OPINION = 5;
     public static final int NUM_OF_BINS_OF_OPINION_FOR_WRITER = 10;
