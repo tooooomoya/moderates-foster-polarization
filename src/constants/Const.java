@@ -2,7 +2,7 @@ package constants;
 
 public class Const {
     // simulation parameter
-    public static final int MAX_SIMULATION_STEP = 10000;
+    public static final int MAX_SIMULATION_STEP = 30000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
