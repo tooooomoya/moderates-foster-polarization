@@ -43,6 +43,7 @@ public class ConnectingNearestNeighborNetwork extends Network {
         double r = 0.01;
 
         int currentSize = 3;
+        
         setEdge(0, 1, 1);
         setEdge(0, 2, 1);
         setEdge(1, 0, 1);

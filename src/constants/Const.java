@@ -2,7 +2,7 @@ package constants;
 
 public class Const {
     // simulation parameter
-    public static final int MAX_SIMULATION_STEP = 30000;
+    public static final int MAX_SIMULATION_STEP = 50000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
@@ -24,14 +24,19 @@ public class Const {
 
     // user num = 1000
     public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
+
     public static final double INITIAL_PP = 0.1; // Prob of Posting
-    public static final double INITIAL_PU = 0.1; // Prob of Using platform (Access platform)
+    public static final double MAX_PP = 1.0;
+    public static final double MIN_PP = 0.05;
     public static final double INCREMENT_PP = 0.1;
-    public static final double INCREMENT_PU = 0.01;
     public static final double DECREMENT_PP = INCREMENT_PP;
+
+    public static final double INITIAL_PU = 0.1; // Prob of Using platform (Accessing platform)
+    public static final double MAX_PU = 0.1;
+    public static final double MIN_PU = 0.1;
+    public static final double INCREMENT_PU = 0.01;
     public static final double DECREMENT_PU = INCREMENT_PU;
-    public static final double MIN_PP = INITIAL_PP;
-    public static final double MIN_PU = INITIAL_PU;
+    
     public static final double DECREMENT_BC = 0.003;
 
     // user num = 5000

@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 set -euo pipefail
 
 cleanup() {
@@ -26,7 +25,8 @@ echo "Compilation finished."
 # ================================
 # 2. 並列実行設定
 # ================================
-NUM_RUNS=10          # seed = 0..9
+SEED_START=10
+NUM_RUNS=10   # 10 最大並列数を超えたら、その分時間がかかる
 MAX_PARALLEL=12       # ★ 最大並列数（重要）
 JAVA_HEAP="2g"       # ★ 1プロセスあたりの最大ヒープ
 LOGDIR="logs"
@@ -56,7 +56,7 @@ run_one() {
 export -f run_one
 export LIBCP JAVA_HEAP LOGDIR
 
-seq 0 $((NUM_RUNS - 1)) \
+seq $SEED_START $((SEED_START + NUM_RUNS - 1)) \
   | xargs -n 1 -P "$MAX_PARALLEL" -I {} bash -c 'run_one "$@"' _ {}
 
 echo "All simulations completed!"

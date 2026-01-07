@@ -134,13 +134,13 @@ public class OpinionDynamics {
             List<Agent> shuffledAgents = new ArrayList<>(Arrays.asList(agentSet));
             Collections.shuffle(shuffledAgents, randomGenerator.get());
 
-            /*if(step == 1000) {
+            if(step == 10000) {
                 List<Integer> targetUsers = admin.getManipulationTarget(agentSet);
                 System.out.println("Target users for manipulation: " + targetUsers);
                 for(int userId : targetUsers) {
                     agentSet[userId].setTarget();
                 }
-            }*/
+            }
 
             for (Agent agent : shuffledAgents) {
                 int agentId = agent.getId();

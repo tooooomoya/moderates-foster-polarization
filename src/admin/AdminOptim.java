@@ -96,7 +96,7 @@ public class AdminOptim {
 
     public List<Integer> getManipulationTarget(Agent[] agentSet) {
         List<Map.Entry<Integer, Integer>> rankingList = getFollowerRanking();
-
+        
         List<Integer> neutralUsers = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : rankingList) {
             int userId = entry.getKey();

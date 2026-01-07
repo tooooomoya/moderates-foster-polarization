@@ -233,11 +233,10 @@ public class Agent {
         // post prob is set based on the marginal utility theory
         double increment = Const.MU_PARAM * Math.log(this.recievedLikeCount + 1);
     
-        //this.postProb += (1.0 - this.postProb) * increment;
+        // 100 received likes lead to approximately 1.46 times increase
+        //this.postProb *= 1.0 + increment;
 
-        if (this.postProb > 1.0) {
-            this.postProb = 1.0;
-        }
+        this.postProb = Math.min(this.postProb, 1.0);
         this.recievedLikeCount = 0;
     }
 
@@ -280,44 +279,40 @@ public class Agent {
 
         if (comfortPostRate > Const.OPINION_PREVALENCE) {
             //this.postProb += Const.INCREMENT_PP * decayFunc(this.timeStep);
-            this.postProb *= 1.05;
+            this.postProb *= 1.1;
+            this.useProb *= 1.1;
             //this.useProb += Const.INCREMENT_PU * decayFunc(this.timeStep);
         }else if(comfortPostRate <= 1 - Const.OPINION_PREVALENCE){ 
             //this.useProb -= Const.DECREMENT_PU * decayFunc(this.timeStep);
             //this.postProb -= Const.DECREMENT_PP * decayFunc(this.timeStep);
-            this.postProb *= 0.95;
+            this.postProb *= 0.9;
+            this.useProb *= 0.9;
         }
 
         //// social influence
 
         this.opinion = this.stubbornness * this.intrinsicOpinion + (1 - this.stubbornness) * (temp / postNum);
 
-        if (this.opinion < -1) {
-            this.opinion = -1;
-        } else if (this.opinion > 1) {
-            this.opinion = 1;
-        }
-        if (this.postProb > 1.0) {
-            this.postProb = 1.0;
-        } else if (this.postProb < Const.MIN_PP) {
-            this.postProb = Const.MIN_PP;
-        }
-        if (this.useProb > 1.0) {
-            this.useProb = 1.0;
-        } else if (this.useProb < Const.MIN_PU) {
-            this.useProb = Const.MIN_PU;
-        }
-        if (this.bc < Const.MINIMUM_BC) {
-            this.bc = Const.MINIMUM_BC;
-        }
+        //// clipping
+
+        // opinion is in [-1, 1]
+        this.opinion = Math.max(-1.0, Math.min(this.opinion, 1.0));
+
+        // postProb is in [Const.MIN_PP, Const.MAX_PP]
+        this.postProb = Math.max(Const.MIN_PP, Math.min(this.postProb, Const.MAX_PP));
+
+        // useProb is in [Const.MIN_PU, Const.MAX_PU]
+        this.useProb = Math.max(Const.MIN_PU, Math.min(this.useProb, Const.MAX_PU));
+
+        // bc is in [Const.MINIMUM_BC, 1.0]
+        this.bc = Math.max(this.bc, Math.min(Const.MINIMUM_BC, 1.0));
 
 
         //// exp 
         
-        /*if(this.id < 3 && this.intrinsicOpinion == 0.0) { // extremists
-            this.postProb = 0.0;
-            this.repostProb = 0.0;
-        }*/
+        if(this.target) { // extremists
+            this.opinion += 0.01;
+        }
         
         ////
 
@@ -399,7 +394,9 @@ public class Agent {
                 followeeNum++;
             }
         }
-        if (this.feed.size() == 0 || followeeNum <= 1) {
+        
+        //if (this.feed.size() == 0 || followeeNum <= 1) {
+        if (this.feed.isEmpty()) {
             return -1;
         }
 
