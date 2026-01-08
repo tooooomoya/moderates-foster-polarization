@@ -279,13 +279,13 @@ public class Agent {
 
         if (comfortPostRate > Const.OPINION_PREVALENCE) {
             //this.postProb += Const.INCREMENT_PP * decayFunc(this.timeStep);
-            this.postProb *= 1.1;
+            this.postProb *= 1.2;
             this.useProb *= 1.1;
             //this.useProb += Const.INCREMENT_PU * decayFunc(this.timeStep);
         }else if(comfortPostRate <= 1 - Const.OPINION_PREVALENCE){ 
             //this.useProb -= Const.DECREMENT_PU * decayFunc(this.timeStep);
             //this.postProb -= Const.DECREMENT_PP * decayFunc(this.timeStep);
-            this.postProb *= 0.9;
+            this.postProb *= 0.8;
             this.useProb *= 0.9;
         }
 
