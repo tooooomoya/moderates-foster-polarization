@@ -2,7 +2,7 @@ package constants;
 
 public class Const {
     // simulation parameter
-    public static final int MAX_SIMULATION_STEP = 50000;
+    public static final int MAX_SIMULATION_STEP = 40000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
@@ -73,7 +73,7 @@ public class Const {
     "cRateMean_0", "cRateMean_1", "cRateMean_2", "cRateMean_3", "cRateMean_4", "cRateVar_0", "cRateVar_1", "cRateVar_2", "cRateVar_3", "cRateVar_4", 
     "highComfortRateNum_0", "highComfortRateNum_1", "highComfortRateNum_2", "highComfortRateNum_3", "highComfortRateNum_4"};
     public static String RESULT_FOLDER_PATH = "results";
-    public static final int NUM_OF_BINS_OF_POSTS = 5; // % of bins of opinions in posts for analysis
-    public static final int NUM_OF_BINS_OF_OPINION = 5;
+    public static final int NUM_OF_BINS_OF_POSTS = 3; // % of bins of opinions in posts for analysis
+    public static final int NUM_OF_BINS_OF_OPINION = NUM_OF_BINS_OF_POSTS;
     public static final int NUM_OF_BINS_OF_OPINION_FOR_WRITER = 10;
 }

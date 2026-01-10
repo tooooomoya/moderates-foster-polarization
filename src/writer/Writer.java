@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Writer {
+
     private int simulationStep;
     private String folderPath;
     private double opinionVar;
@@ -130,7 +131,7 @@ public class Writer {
         //// metrics
         String filePath = folderPath + "/metrics/result_" + simulationStep + ".csv";
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, false))) { // ← false で上書きモード
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, false))) {
             // write a header row
             StringBuilder header = new StringBuilder();
             header.append("step");
@@ -139,112 +140,60 @@ public class Writer {
             }
             pw.println(header.toString());
 
-            // write a result raw
+            // write a result row
             StringBuilder sb = new StringBuilder();
             sb.append(simulationStep);
 
             for (String key : resultList) {
                 sb.append(",");
-                switch (key) {
-                    case "opinionVar":
-                        sb.append(String.format("%.4f", this.opinionVar));
-                        break;
-                    case "postOpinionVar":
-                        sb.append(String.format("%.4f", this.postOpinionVar));
-                        break;
-                    case "follow":
-                        sb.append(this.followActionNum);
-                        break;
-                    case "unfollow":
-                        sb.append(this.unfollowActionNum);
-                        break;
-                    case "rewire":
-                        sb.append(this.rewireActionNum);
-                        break;
-                    case "opinionAvg":
-                        sb.append(String.format("%.4f", this.opinionAvg));
-                        break;
-                    case "feedVar":
-                        sb.append(String.format("%.4f", this.feedVar));
-                        break;
-                    case "feedPostOpinionMean_0":
-                        sb.append(String.format("%.4f", this.feedMeanArray[0]));
-                        break;
-                    case "feedPostOpinionMean_1":
-                        sb.append(String.format("%.4f", this.feedMeanArray[1]));
-                        break;
-                    case "feedPostOpinionMean_2":
-                        sb.append(String.format("%.4f", this.feedMeanArray[2]));
-                        break;
-                    case "feedPostOpinionMean_3":
-                        sb.append(String.format("%.4f", this.feedMeanArray[3]));
-                        break;
-                    case "feedPostOpinionMean_4":
-                        sb.append(String.format("%.4f", this.feedMeanArray[4]));
-                        break;
-                    case "feedPostOpinionVar_0":
-                        sb.append(String.format("%.4f", this.feedVarArray[0]));
-                        break;
-                    case "feedPostOpinionVar_1":
-                        sb.append(String.format("%.4f", this.feedVarArray[1]));
-                        break;
-                    case "feedPostOpinionVar_2":
-                        sb.append(String.format("%.4f", this.feedVarArray[2]));
-                        break;
-                    case "feedPostOpinionVar_3":
-                        sb.append(String.format("%.4f", this.feedVarArray[3]));
-                        break;
-                    case "feedPostOpinionVar_4":
-                        sb.append(String.format("%.4f", this.feedVarArray[4]));
-                        break;
-                    case "cRateMean_0":
-                        sb.append(String.format("%.4f", this.cRateMeanArray[0]));
-                        break;
-                    case "cRateMean_1":
-                        sb.append(String.format("%.4f", this.cRateMeanArray[1]));
-                        break;
-                    case "cRateMean_2":
-                        sb.append(String.format("%.4f", this.cRateMeanArray[2]));
-                        break;
-                    case "cRateMean_3":
-                        sb.append(String.format("%.4f", this.cRateMeanArray[3]));
-                        break;
-                    case "cRateMean_4":
-                        sb.append(String.format("%.4f", this.cRateMeanArray[4]));
-                        break;
-                    case "cRateVar_0":
-                        sb.append(String.format("%.4f", this.cRateVarArray[0]));
-                        break;
-                    case "cRateVar_1":
-                        sb.append(String.format("%.4f", this.cRateVarArray[1]));
-                        break;
-                    case "cRateVar_2":
-                        sb.append(String.format("%.4f", this.cRateVarArray[2]));
-                        break;
-                    case "cRateVar_3":
-                        sb.append(String.format("%.4f", this.cRateVarArray[3]));
-                        break;
-                    case "cRateVar_4":
-                        sb.append(String.format("%.4f", this.cRateVarArray[4]));
-                        break;
-                    case "highComfortRateNum_0":
-                        sb.append(String.format("%.4f", this.highComfortRateNumArray[0]));
-                        break;
-                    case "highComfortRateNum_1":
-                        sb.append(String.format("%.4f", this.highComfortRateNumArray[1]));
-                        break;
-                    case "highComfortRateNum_2":
-                        sb.append(String.format("%.4f", this.highComfortRateNumArray[2]));
-                        break;
-                    case "highComfortRateNum_3":    
-                        sb.append(String.format("%.4f", this.highComfortRateNumArray[3]));
-                        break;
-                    case "highComfortRateNum_4":
-                        sb.append(String.format("%.4f", this.highComfortRateNumArray[4]));
-                        break;     
 
-                    default:
-                        sb.append(""); // for undefined elements
+                // 1. 固定の単一指標を先に処理
+                if (handleSingleMetric(sb, key)) {
+                    continue; // マッチしたら次のキーへ
+                }
+
+                // 2. 配列系の動的指標を処理 (_0, _1 などが含まれるもの)
+                int lastUnderscoreIndex = key.lastIndexOf("_");
+                if (lastUnderscoreIndex != -1) {
+                    String prefix = key.substring(0, lastUnderscoreIndex);
+                    String suffix = key.substring(lastUnderscoreIndex + 1);
+
+                    try {
+                        int index = Integer.parseInt(suffix);
+
+                        // インデックスが現在のBin設定の範囲内かチェック
+                        if (index >= 0 && index < Const.NUM_OF_BINS_OF_POSTS) {
+                            switch (prefix) {
+                                case "feedPostOpinionMean":
+                                    sb.append(String.format("%.4f", this.feedMeanArray[index]));
+                                    break;
+                                case "feedPostOpinionVar":
+                                    sb.append(String.format("%.4f", this.feedVarArray[index]));
+                                    break;
+                                case "cRateMean":
+                                    sb.append(String.format("%.4f", this.cRateMeanArray[index]));
+                                    break;
+                                case "cRateVar":
+                                    sb.append(String.format("%.4f", this.cRateVarArray[index]));
+                                    break;
+                                case "highComfortRateNum":
+                                    sb.append(String.format("%.4f", this.highComfortRateNumArray[index]));
+                                    break;
+                                default:
+                                    sb.append(""); // 定義されていないプレフィックスの場合
+                                    break;
+                            }
+                        } else {
+                            // resultListにはあるが、現在のBin数設定では範囲外の場合（空文字または0を入れる）
+                            sb.append("");
+                        }
+                    } catch (NumberFormatException e) {
+                        // _の後ろが数字ではなかった場合
+                        sb.append("");
+                    }
+                } else {
+                    // 定義されていないキーの場合
+                    sb.append("");
                 }
             }
 
@@ -306,6 +255,34 @@ public class Writer {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean handleSingleMetric(StringBuilder sb, String key) {
+        switch (key) {
+            case "opinionVar":
+                sb.append(String.format("%.4f", this.opinionVar));
+                return true;
+            case "postOpinionVar":
+                sb.append(String.format("%.4f", this.postOpinionVar));
+                return true;
+            case "follow":
+                sb.append(this.followActionNum);
+                return true;
+            case "unfollow":
+                sb.append(this.unfollowActionNum);
+                return true;
+            case "rewire":
+                sb.append(this.rewireActionNum);
+                return true;
+            case "opinionAvg":
+                sb.append(String.format("%.4f", this.opinionAvg));
+                return true;
+            case "feedVar":
+                sb.append(String.format("%.4f", this.feedVar));
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void writeDegrees(double[][] adjacencyMatrix, String outputDirPath) {
