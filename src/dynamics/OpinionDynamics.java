@@ -67,21 +67,6 @@ public class OpinionDynamics {
             agentSet[i].setFollowList(tempAdjacencyMatrix);
             agentSet[i].setFollowerNum(tempAdjacencyMatrix);
         }
-
-        // make sure that there are at least one agent for each intrinsic opinion
-        // Top three hub users will have different opinions
-        double[] opinions = { 0.0, -1.0, 1.0 };
-
-        List<Double> opinionList = new ArrayList<>();
-        for (double op : opinions)
-            opinionList.add(op);
-        Collections.shuffle(opinionList, randomGenerator.get());
-
-        for (int j = 0; j < opinions.length; j++) {
-            agentSet[j].setIntrinsicOpinion(opinionList.get(j));
-            System.out.println("Agent " + j + " assigned opinion " + agentSet[j].getIntrinsicOpinion());
-        }
-
     }
 
     private void setCustomized() {
@@ -104,6 +89,18 @@ public class OpinionDynamics {
     // main part of the experimental dynamics
     public void evolve() {
         this.ASChecker = new AssertionCheck(agentSet, network, agentNum, t);
+        
+        // make sure that there are at least one agent for each intrinsic opinion
+        // Top three hub users will have different opinions
+        double[] opinions = { 0.0, -1.0, 1.0 };
+        List<Integer> topKInfluencers = admin.getTopInfluencers(opinions.length);
+        Collections.shuffle(topKInfluencers, randomGenerator.get());
+        for (int j = 0; j < opinions.length; j++) {
+            int agentId = topKInfluencers.get(j);
+            agentSet[agentId].setIntrinsicOpinion(opinions[j]);
+            System.out.println("Agent " + agentId + " assigned opinion " + agentSet[agentId].getIntrinsicOpinion());
+        }
+
         // export gexf
         gephi.updateGraph(agentSet, network);
         gephi.exportGraph(0, folerPath);

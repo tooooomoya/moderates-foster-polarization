@@ -312,7 +312,7 @@ public class Agent {
         //// exp 
         
         if(this.target) {
-            this.opinion = -1.0;
+            this.opinion = +1.0;
         }
         
         ////

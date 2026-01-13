@@ -116,4 +116,15 @@ public class AdminOptim {
         return result;
     }
 
+    public List<Integer> getTopInfluencers(int topK) {
+        List<Map.Entry<Integer, Integer>> rankingList = getFollowerRanking();
+        List<Integer> topInfluencers = new ArrayList<>();
+
+        for (int i = 0; i < Math.min(topK, rankingList.size()); i++) {
+            topInfluencers.add(rankingList.get(i).getKey());
+        }
+
+        return topInfluencers;
+    }
+
 }
