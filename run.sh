@@ -26,7 +26,7 @@ echo "Compilation finished."
 # 2. 並列実行設定
 # ================================
 SEED_START=10
-NUM_RUNS=10   # 10 最大並列数を超えたら、その分時間がかかる
+NUM_RUNS=5   # 10 最大並列数を超えたら、その分時間がかかる
 MAX_PARALLEL=12       # ★ 最大並列数（重要）
 JAVA_HEAP="2g"       # ★ 1プロセスあたりの最大ヒープ
 LOGDIR="logs"

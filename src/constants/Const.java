@@ -2,7 +2,7 @@ package constants;
 
 public class Const {
     // simulation parameter
-    public static final int MAX_SIMULATION_STEP = 40000;
+    public static final int MAX_SIMULATION_STEP = 50000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
@@ -21,6 +21,7 @@ public class Const {
     public static final double POST_COST = 0.0;
     public static final double MU_PARAM = 0.1; // Marginal Utility log func parameter
     public static final double OPINION_PREVALENCE = 0.5;
+    public static final double INITIAL_OPINION_STD = 0.5;
 
     // user num = 1000
     public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
@@ -38,18 +39,6 @@ public class Const {
     public static final double DECREMENT_PU = INCREMENT_PU;
     
     public static final double DECREMENT_BC = 0.003;
-
-    // user num = 5000
-    /*public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
-    public static final double INITIAL_PP = 0.02; // Prob of Posting
-    public static final double INITIAL_PU = 0.02; // Prob of Using platform
-    public static final double INCREMENT_PP = 0.3;
-    public static final double INCREMENT_PU = 0.05;
-    public static final double DECREMENT_PP = 0.0;
-    public static final double DECREMENT_PU = 0.05;
-    public static final double MIN_PP = 0.1;
-    public static final double MIN_PU = INITIAL_PU;
-    public static final double DECREMENT_BC = 0.005;*/
 
     //public static final double COMFORT_RATE = 0.5;
     public static final double INITIAL_STUBBORNNESS = 0.8;
@@ -73,7 +62,7 @@ public class Const {
     "cRateMean_0", "cRateMean_1", "cRateMean_2", "cRateMean_3", "cRateMean_4", "cRateVar_0", "cRateVar_1", "cRateVar_2", "cRateVar_3", "cRateVar_4", 
     "highComfortRateNum_0", "highComfortRateNum_1", "highComfortRateNum_2", "highComfortRateNum_3", "highComfortRateNum_4"};
     public static String RESULT_FOLDER_PATH = "results";
-    public static final int NUM_OF_BINS_OF_POSTS = 3; // % of bins of opinions in posts for analysis
+    public static final int NUM_OF_BINS_OF_POSTS = 5; // % of bins of opinions in posts for analysis
     public static final int NUM_OF_BINS_OF_OPINION = NUM_OF_BINS_OF_POSTS;
     public static final int NUM_OF_BINS_OF_OPINION_FOR_WRITER = 10;
 }

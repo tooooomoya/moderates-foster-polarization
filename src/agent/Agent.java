@@ -34,7 +34,7 @@ public class Agent {
     public Agent(int agentID) {
         this.id = agentID;
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
-        this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * 0.6)); // norm dist
+        this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * Const.INITIAL_OPINION_STD)); // norm dist
         this.opinion = this.intrinsicOpinion;
         this.bc = Const.BOUNDED_CONFIDENCE; // dynamic not static
         this.postProb = Const.INITIAL_PP;
@@ -291,7 +291,6 @@ public class Agent {
 
         //// social influence
 
-        
         this.opinion = this.stubbornness * this.intrinsicOpinion + (1 - this.stubbornness) * (temp / postNum);
 
         //// clipping

@@ -84,17 +84,6 @@ public class ConnectingNearestNeighborNetwork extends Network {
                 }
             }
         }
-
-
-        /// exp 
-        /*for(int i = 0; i < getSize(); i++){
-            if(randomGenerator.get().nextDouble() < 0.1){
-                setEdge(i, 0, 1);
-            }
-        }*/
-
-        /// 
-
     }
 
     private int chooseNodeByDegree(int maxIndex) {
