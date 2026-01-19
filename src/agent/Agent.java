@@ -368,7 +368,69 @@ public class Agent {
         return repostedPostList;
     }
 
-    public int follow() {
+    /**
+     * フォロー処理を行うメソッド
+     * @param agents エージェント配列
+     * @return int[] {新規フォローID, 解除したID}。何もしなかった場合は null を返す。
+     */
+    public int[] follow(Agent[] agents) {
+        // 1. 候補者のリストアップ
+        List<Integer> candidates = new ArrayList<>();
+        for (Post post : this.feed) {
+            // 既にフォローしている、またはブロック（unfollowList）している人は除外
+            if (Math.abs(post.getPostOpinion() - this.opinion) < this.bc 
+                    && !this.followList[post.getPostUserId()]
+                    && !this.unfollowList[post.getPostUserId()]) {
+                candidates.add(post.getPostUserId());
+            }
+        }
+
+        // 候補がいない、または確率判定でフォローしない場合は null を返す
+        if (candidates.isEmpty() || randomGenerator.get().nextDouble() >= Const.FOLLOW_PROB) {
+            return new int[]{-1, -1};
+        }
+
+        // 2. 新しくフォローする相手を決定
+        int newFollowId = candidates.get(randomGenerator.get().nextInt(candidates.size()));
+
+        // 3. 上限チェックと「押し出し（アンフォロー）」処理
+        int removeTargetId = -1; // 初期値は -1（誰も削除しない）
+
+        // 現在のフォロー数を計算（※followListのサイズではなく、trueの数）
+        int currentFollowCount = 0;
+        for (boolean b : this.followList) {
+            if (b) currentFollowCount++;
+        }
+
+        if (currentFollowCount >= Const.MAX_FOLLOW_CAPACITY) {
+            double maxDiff = -1.0;
+
+            // フォロー中の中で「最も意見が遠い」人を探す
+            for (int i = 0; i < this.followList.length; i++) {
+                if (this.followList[i]) { // フォローしている人だけ対象
+                    double diff = Math.abs(agents[i].getOpinion() - this.opinion);
+                    
+                    if (diff > maxDiff) {
+                        maxDiff = diff;
+                        removeTargetId = i;
+                    }
+                }
+            }
+
+            // 最も遠い人をアンフォロー
+            if (removeTargetId != -1) {
+                this.followList[removeTargetId] = false;
+            }
+        }
+
+        // 4. 新しいフォローを確定
+        this.followList[newFollowId] = true;
+
+        // ★ [0]:追加したID, [1]:削除したID を返す
+        return new int[]{newFollowId, removeTargetId};
+    }
+
+    /*public int follow() {
         List<Integer> candidates = new ArrayList<>();
 
         for (Post post : this.feed) {
@@ -385,7 +447,7 @@ public class Agent {
             return followId;
         }
         return -1;
-    }
+    }*/
 
     public int unfollow() {
         int followeeNum = 0;

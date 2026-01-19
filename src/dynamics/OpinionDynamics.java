@@ -54,7 +54,8 @@ public class OpinionDynamics {
         ///// you can change the initial network bellow
         // this.network = new RandomNetwork(agentNum, connectionProbability);
         // this.network = new ConnectingNearestNeighborNetwork(agentNum, 0.3);
-        this.network = new WattsStrogatzNetwork(agentNum, 4, 0.1);
+        // this.network = new WattsStrogatzNetwork(agentNum, 4, 0.1);
+        this.network = new BarabasiAlbertNetwork(agentNum, 2);
         /////
 
         this.network.makeNetwork(agentSet);
@@ -170,7 +171,7 @@ public class OpinionDynamics {
                 }
 
                 /////// follow
-                int followedId = agent.follow();
+                int[] followedIds = agent.follow(agentSet);
 
                 /////// unfollow
                 int unfollowedId = agent.unfollow();
@@ -189,19 +190,20 @@ public class OpinionDynamics {
                 }
 
                 agent.updateMyself();
-                admin.updateAdjacencyMatrix(agentId, followedId, unfollowedId);
+                admin.updateAdjacencyMatrix(agentId, followedIds, unfollowedId);
                 agent.resetPostCash();
                 agent.resetFeed();
                 ASChecker.assertionChecker(agentSet, admin, agentNum, step);
-                if (followedId >= 0) {
-                    followActionNum++;
-                }
+                    if (followedIds[0] >= 0) {
+                        followActionNum++;
+                    }
+                
                 if (unfollowedId >= 0) {
                     unfollowActionNum++;
                 }
             }
 
-            if (step % 1000 == 0) {
+            if (step % 5000 == 0) {
                 // export gexf
                 network.setAdjacencyMatrix(admin.getAdjacencyMatrix());
                 gephi.updateGraph(agentSet, network);

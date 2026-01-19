@@ -67,9 +67,12 @@ public class AdminOptim {
         recommendPostQueue.add(post); // 新しい投稿を追加
     }
 
-    public void updateAdjacencyMatrix(int userId, int followedId, int unfollowedId) {
-        if (followedId >= 0) {
-            this.W[userId][followedId] = 1.0;
+    public void updateAdjacencyMatrix(int userId, int[] followedIds, int unfollowedId) {
+        if (followedIds[0] >= 0) {
+            this.W[userId][followedIds[0]] = 1.0;
+        }
+        if(followedIds[1] >= 0) {
+            this.W[userId][followedIds[1]] = 0.0;
         }
         if (unfollowedId >= 0) {
             this.W[userId][unfollowedId] = 0.0;
@@ -103,20 +106,20 @@ public class AdminOptim {
             int followerNum = entry.getValue();
             double opinion = agentSet[userId].getOpinion();
             int opinionClass = agentSet[userId].getOpinionClass();
-
-            if (opinionClass == 2 && userId > 2) {
+            if (Math.abs(opinion) < 0.2) {
                 neutralUsers.add(userId);
             }
         }
 
         List<Integer> result = new ArrayList<>();
-        if (neutralUsers.size() > 0) result.add(neutralUsers.get(0));
-        if (neutralUsers.size() > 1) result.add(neutralUsers.get(1));
+        if (neutralUsers.size() > 1) result.add(neutralUsers.get(0));
+        if (neutralUsers.size() > 2) result.add(neutralUsers.get(1));
 
         return result;
     }
 
     public List<Integer> getTopInfluencers(int topK) {
+        setFollowerNumArray();
         List<Map.Entry<Integer, Integer>> rankingList = getFollowerRanking();
         List<Integer> topInfluencers = new ArrayList<>();
 

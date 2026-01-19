@@ -21,7 +21,8 @@ public class Const {
     public static final double POST_COST = 0.0;
     public static final double MU_PARAM = 0.1; // Marginal Utility log func parameter
     public static final double OPINION_PREVALENCE = 0.5;
-    public static final double INITIAL_OPINION_STD = 0.5;
+    public static final double INITIAL_OPINION_STD = 0.6;
+    public static final double MAX_FOLLOW_CAPACITY = 10;
 
     // user num = 1000
     public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
@@ -33,8 +34,8 @@ public class Const {
     public static final double DECREMENT_PP = INCREMENT_PP;
 
     public static final double INITIAL_PU = 0.1; // Prob of Using platform (Accessing platform)
-    public static final double MAX_PU = 0.1;
-    public static final double MIN_PU = 0.1;
+    public static final double MAX_PU = INITIAL_PU;
+    public static final double MIN_PU = INITIAL_PU;
     public static final double INCREMENT_PU = 0.01;
     public static final double DECREMENT_PU = INCREMENT_PU;
     
@@ -44,10 +45,10 @@ public class Const {
     public static final double INITIAL_STUBBORNNESS = 0.8;
 
     // follow parameter
-    public static final double FOLLOW_PROB = 0.1;
+    public static final double FOLLOW_PROB = 0.01;
 
     // unfollow parameter
-    public static final double UNFOLLOW_PROB = 0.1;
+    public static final double UNFOLLOW_PROB = 0.01;
 
     // input data parameter
     public static final String EDGES_FILE_PATH = "Twitter/edgesTwitter.txt";
