@@ -97,24 +97,22 @@ public class AdminOptim {
 
     }
 
-    // exclude top K influencers from manipulation target
-    public List<Integer> getManipulationTarget(Agent[] agentSet, List<Integer> topKInflencers) {
+    // exclude the largest moderate influencer
+    public List<Integer> getManipulationTarget(Agent[] agentSet) {
         List<Map.Entry<Integer, Integer>> rankingList = getFollowerRanking();
         
         List<Integer> neutralUsers = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : rankingList) {
             int userId = entry.getKey();
-            int followerNum = entry.getValue();
             double opinion = agentSet[userId].getOpinion();
-            int opinionClass = agentSet[userId].getOpinionClass();
-            if (Math.abs(opinion) < 0.2 && !topKInflencers.contains(userId)) {
+            if (Math.abs(opinion) < 0.2) {
                 neutralUsers.add(userId);
             }
         }
 
         List<Integer> result = new ArrayList<>();
-        if (neutralUsers.size() > 1) result.add(neutralUsers.get(0));
         if (neutralUsers.size() > 2) result.add(neutralUsers.get(1));
+        if (neutralUsers.size() > 3) result.add(neutralUsers.get(2));
 
         return result;
     }

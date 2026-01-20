@@ -134,7 +134,7 @@ public class OpinionDynamics {
             Collections.shuffle(shuffledAgents, randomGenerator.get());
 
             if(step == 20000) {
-                List<Integer> targetUsers = admin.getManipulationTarget(agentSet, topKInfluencers);
+                List<Integer> targetUsers = admin.getManipulationTarget(agentSet);
                 System.out.println("Target users for manipulation: " + targetUsers);
                 for(int userId : targetUsers) {
                     agentSet[userId].setTarget();
