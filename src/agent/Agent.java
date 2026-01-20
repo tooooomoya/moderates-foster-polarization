@@ -234,7 +234,7 @@ public class Agent {
         double increment = Const.MU_PARAM * Math.log(this.recievedLikeCount + 1);
     
         // 100 received likes lead to approximately 1.46 times increase
-        //this.postProb *= 1.0 + increment;
+        this.postProb *= 1.0 + increment;
 
         this.postProb = Math.min(this.postProb, 1.0);
         this.recievedLikeCount = 0;
