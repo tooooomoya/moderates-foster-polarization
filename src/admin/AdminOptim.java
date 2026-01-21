@@ -97,22 +97,23 @@ public class AdminOptim {
 
     }
 
-    // exclude the largest moderate influencer
+    // clip neutral users who have too many followers
     public List<Integer> getManipulationTarget(Agent[] agentSet) {
         List<Map.Entry<Integer, Integer>> rankingList = getFollowerRanking();
         
         List<Integer> neutralUsers = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : rankingList) {
             int userId = entry.getKey();
+            int followerNum = entry.getValue();
             double opinion = agentSet[userId].getOpinion();
-            if (Math.abs(opinion) < 0.2) {
+            if (Math.abs(opinion) < 0.2 && followerNum < (int) (Const.NUM_OF_USER * 0.2)) {
                 neutralUsers.add(userId);
             }
         }
 
         List<Integer> result = new ArrayList<>();
+        if (neutralUsers.size() > 1) result.add(neutralUsers.get(0));
         if (neutralUsers.size() > 2) result.add(neutralUsers.get(1));
-        if (neutralUsers.size() > 3) result.add(neutralUsers.get(2));
 
         return result;
     }
