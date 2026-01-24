@@ -234,7 +234,7 @@ public class Agent {
         double increment = Const.MU_PARAM * Math.log(this.recievedLikeCount + 1);
     
         // 100 received likes lead to approximately 1.46 times increase
-        this.postProb *= 1.0 + increment;
+        //this.postProb *= 1.0 + increment;
 
         this.postProb = Math.min(this.postProb, 1.0);
         this.recievedLikeCount = 0;
@@ -257,7 +257,7 @@ public class Agent {
 
             if (Math.abs(post.getPostOpinion() - this.opinion) > this.bc) {
                 //this.bc -= Const.DECREMENT_BC * decayFunc(this.timeStep);
-                this.bc *= 0.99;
+                this.bc *= Const.BC_DEC_RATE;
                 // 0.9995だと弱い
                 // 0.999でも弱い
                 // 0.99だと強いかも
@@ -311,7 +311,7 @@ public class Agent {
         //// exp 
         
         if(this.target) {
-            this.opinion = +1.0;
+            this.opinion = Const.TARGET_DIRECTION;
         }
         
         ////

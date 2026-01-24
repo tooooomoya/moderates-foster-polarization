@@ -1,5 +1,4 @@
-results/run_*
-results/summary
+results/
 bin/
 venv/
 *.log

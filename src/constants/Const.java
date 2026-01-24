@@ -6,6 +6,7 @@ public class Const {
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
+    public static double TARGET_DIRECTION = 0;
 
     // Admin feedback parameter
     public static final int MAX_RECOMMENDATION_POST_LENGTH = 100;
@@ -23,6 +24,8 @@ public class Const {
     public static final double OPINION_PREVALENCE = 0.5;
     public static final double INITIAL_OPINION_STD = 0.6;
     public static final double MAX_FOLLOW_CAPACITY = 10;
+    public static final double BC_DEC_RATE = 0.999;
+    public static final double INITIAL_STUBBORNNESS = 0.8;
 
     // user num = 1000
     public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
@@ -40,9 +43,6 @@ public class Const {
     public static final double DECREMENT_PU = INCREMENT_PU;
     
     public static final double DECREMENT_BC = 0.003;
-
-    //public static final double COMFORT_RATE = 0.5;
-    public static final double INITIAL_STUBBORNNESS = 0.8;
 
     // follow parameter
     public static final double FOLLOW_PROB = 0.01;
@@ -65,5 +65,5 @@ public class Const {
     public static String RESULT_FOLDER_PATH = "results";
     public static final int NUM_OF_BINS_OF_POSTS = 5; // % of bins of opinions in posts for analysis
     public static final int NUM_OF_BINS_OF_OPINION = NUM_OF_BINS_OF_POSTS;
-    public static final int NUM_OF_BINS_OF_OPINION_FOR_WRITER = 10;
+    public static final int NUM_OF_BINS_OF_OPINION_FOR_WRITER = NUM_OF_BINS_OF_OPINION;
 }

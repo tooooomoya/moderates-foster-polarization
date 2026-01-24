@@ -53,9 +53,9 @@ public class OpinionDynamics {
     private void setNetwork() {
         ///// you can change the initial network bellow
         // this.network = new RandomNetwork(agentNum, connectionProbability);
-        // this.network = new ConnectingNearestNeighborNetwork(agentNum, 0.3);
+        this.network = new ConnectingNearestNeighborNetwork(agentNum, 0.3);
         // this.network = new WattsStrogatzNetwork(agentNum, 4, 0.1);
-        this.network = new BarabasiAlbertNetwork(agentNum, 3);
+        //this.network = new BarabasiAlbertNetwork(agentNum, 3);
         /////
 
         this.network.makeNetwork(agentSet);
@@ -94,14 +94,14 @@ public class OpinionDynamics {
         
         // make sure that there are at least one agent for each intrinsic opinion
         // Top three hub users will have different opinions
-        /*double[] opinions = { 0.0, -1.0, 1.0 };
+        double[] opinions = { 0.0, -1.0, 1.0 };
         List<Integer> topKInfluencers = admin.getTopInfluencers(opinions.length);
         Collections.shuffle(topKInfluencers, randomGenerator.get());
         for (int j = 0; j < opinions.length; j++) {
             int agentId = topKInfluencers.get(j);
             agentSet[agentId].setIntrinsicOpinion(opinions[j]);
             System.out.println("Agent " + agentId + " assigned opinion " + agentSet[agentId].getIntrinsicOpinion());
-        }*/
+        }
 
         // export gexf
         gephi.updateGraph(agentSet, network);
@@ -239,6 +239,10 @@ public class OpinionDynamics {
 
         int seed = Integer.parseInt(args[0]);
         randomGenerator.init(seed);
+
+        if (args.length > 1) {
+            Const.TARGET_DIRECTION = Double.parseDouble(args[1]);
+        }
 
         Const.RANDOM_SEED = seed;
         Const.RESULT_FOLDER_PATH = "results/run_" + seed;

@@ -1,0 +1,13 @@
+agent_num: 1000
+bc_dec_rate: 0.999
+end_seed: 19
+follow_prob: 0.01
+initial_op_std: 0.6
+network_params:
+  m: 3
+num_seed: 5
+prevalence: 0.5
+start_seed: 15
+stubbornness: 0.8
+topology: BA
+unfollow_prob: 0.01
