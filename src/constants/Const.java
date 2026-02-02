@@ -2,7 +2,7 @@ package constants;
 
 public class Const {
     // simulation parameter
-    public static final int MAX_SIMULATION_STEP = 50000;
+    public static final int MAX_SIMULATION_STEP = 40000;
     public static final int NUM_OF_USER = 1000;
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
@@ -24,7 +24,7 @@ public class Const {
     public static final double OPINION_PREVALENCE = 0.5;
     public static final double INITIAL_OPINION_STD = 0.6;
     public static final double MAX_FOLLOW_CAPACITY = 10;
-    public static final double BC_DEC_RATE = 0.999;
+    public static final double BC_DEC_RATE = 0.99;
     public static final double INITIAL_STUBBORNNESS = 0.8;
 
     // user num = 1000
@@ -45,10 +45,10 @@ public class Const {
     public static final double DECREMENT_BC = 0.003;
 
     // follow parameter
-    public static final double FOLLOW_PROB = 0.01;
+    public static final double FOLLOW_PROB = 0.1;
 
     // unfollow parameter
-    public static final double UNFOLLOW_PROB = 0.01;
+    public static final double UNFOLLOW_PROB = 0.1;
 
     // input data parameter
     public static final String EDGES_FILE_PATH = "Twitter/edgesTwitter.txt";

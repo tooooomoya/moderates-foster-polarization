@@ -106,14 +106,15 @@ public class AdminOptim {
             int userId = entry.getKey();
             int followerNum = entry.getValue();
             double opinion = agentSet[userId].getOpinion();
-            if (Math.abs(opinion) < 0.2 && followerNum < (int) (Const.NUM_OF_USER * 0.2)) {
+            //if (Math.abs(opinion) < 0.2 && followerNum < (int) (Const.NUM_OF_USER * 0.2)) {
+            if (Math.abs(opinion) < 0.2 ) {
                 neutralUsers.add(userId);
             }
         }
 
         List<Integer> result = new ArrayList<>();
-        if (neutralUsers.size() > 1) result.add(neutralUsers.get(0));
         if (neutralUsers.size() > 2) result.add(neutralUsers.get(1));
+        if (neutralUsers.size() > 3) result.add(neutralUsers.get(2));
 
         return result;
     }

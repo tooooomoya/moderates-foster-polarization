@@ -13,62 +13,77 @@ trap cleanup SIGINT SIGTERM
 # ================================
 echo "Compiling Java sources..."
 
-LIBCP="$(find lib -name '*.jar' | tr '\n' ':')"
+# findで見つからなかった場合のエラー回避
+LIBCP="$(find lib -name '*.jar' 2>/dev/null | tr '\n' ':')bin"
 
 rm -rf bin
 mkdir -p bin
 
-javac -cp "$LIBCP" -d bin src/**/*.java
+# 依存ライブラリがない場合も考慮してコンパイル
+if [ -n "$(find lib -name '*.jar' 2>/dev/null)" ]; then
+    javac -cp "$LIBCP" -d bin src/**/*.java
+else
+    javac -d bin src/**/*.java
+fi
 
 echo "Compilation finished."
 
 # ================================
 # 2. 並列実行設定
 # ================================
-SEED_START=10
-NUM_RUNS=10   # 10 最大並列数を超えたら、その分時間がかかる
-MAX_PARALLEL=12       # ★ 最大並列数（重要）
-JAVA_HEAP="2g"       # ★ 1プロセスあたりの最大ヒープ
+SEED_START=15
+NUM_SEEDS=10           # ★ Seedの数（各Seedで2回実行するので合計実行数は 2 * NUM_SEEDS になります）
+MAX_PARALLEL=10       # ★ 最大並列数
+JAVA_HEAP="2g"
 LOGDIR="logs"
 
 mkdir -p "$LOGDIR"
 
-echo "Starting $NUM_RUNS simulations (max parallel = $MAX_PARALLEL)..."
+echo "Starting simulations for $NUM_SEEDS seeds (x2 targets = $((NUM_SEEDS * 2)) runs)..."
 
 # ================================
-# 3. 並列実行（制御付き）
+# 3. 並列実行関数
 # ================================
 run_one() {
     local seed=$1
-    local logfile="${LOGDIR}/run_${seed}.log"
+    local target=$2
     
-    # --- 追加: 前半・後半でターゲットを切り替えるロジック ---
-    # 閾値を計算 (例: start=15, runs=10 なら limit=20)
-    # seed 15,16,17,18,19 -> 1.0
-    # seed 20,21,22,23,24 -> -1.0
-    local limit=$((SEED_START + NUM_RUNS / 2))
-    local target_opinion="1.0"
-    
-    if [ "$seed" -ge "$limit" ]; then
-        target_opinion="-1.0"
+    # ログファイル名にターゲットも含めて区別する
+    # 例: run_10_pos.log, run_10_neg.log
+    local label="pos"
+    if [ "$target" = "-1.0" ]; then
+        label="neg"
     fi
-    # ----------------------------------------------------
+    local logfile="${LOGDIR}/run_${seed}_${label}.log"
 
-    echo "[START] seed=$seed target=$target_opinion $(date)" >> "$logfile"
+    echo "[START] seed=$seed target=$target $(date)" > "$logfile"
 
+    # Java実行 (クラスパス設定に注意: LIBCPに既にbinが含まれていないか確認)
+    # ここでは既存のLIBCP + :bin としています
     java -Xmx${JAVA_HEAP} \
          -XX:+ExitOnOutOfMemoryError \
          -cp "${LIBCP}:bin" \
-         dynamics.OpinionDynamics "$seed" "$target_opinion" \
+         dynamics.OpinionDynamics "$seed" "$target" \
          >> "$logfile" 2>&1
 
-    echo "[END]   seed=$seed target=$target_opinion $(date)" >> "$logfile"
+    echo "[END]   seed=$seed target=$target $(date)" >> "$logfile"
 }
 
 export -f run_one
-export LIBCP JAVA_HEAP LOGDIR SEED_START NUM_RUNS
+export LIBCP JAVA_HEAP LOGDIR
 
-seq $SEED_START $((SEED_START + NUM_RUNS - 1)) \
-  | xargs -n 1 -P "$MAX_PARALLEL" -I {} bash -c 'run_one "$@"' _ {}
+# ================================
+# 4. タスク生成と実行
+# ================================
+# Seed範囲: SEED_START から (SEED_START + NUM_SEEDS - 1) まで
+# 各Seedについて 1.0 と -1.0 の組み合わせを出力し、xargsで並列実行
+
+seq $SEED_START $((SEED_START + NUM_SEEDS - 1)) | \
+while read -r seed; do
+    echo "$seed"
+    echo "1.0"
+    echo "$seed"
+    echo "-1.0"
+done | xargs -n 2 -P "$MAX_PARALLEL" bash -c 'run_one "$1" "$2"' _
 
 echo "All simulations completed!"

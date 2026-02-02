@@ -245,7 +245,7 @@ public class OpinionDynamics {
         }
 
         Const.RANDOM_SEED = seed;
-        Const.RESULT_FOLDER_PATH = "results/run_" + seed;
+        Const.RESULT_FOLDER_PATH = "results/run_" + seed + "_dir_" + Const.TARGET_DIRECTION + "/";
 
         String[] subfolders = {
             "clusterings",
