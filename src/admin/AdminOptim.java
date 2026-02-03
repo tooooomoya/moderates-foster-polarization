@@ -116,6 +116,18 @@ public class AdminOptim {
         if (neutralUsers.size() > 2) result.add(neutralUsers.get(1));
         if (neutralUsers.size() > 3) result.add(neutralUsers.get(2));
 
+        // print the size of target users
+        for (int id : result) {
+            System.out.println("Manipulation Target User ID: " + id + ", Opinion: " + agentSet[id].getOpinion() + ", Followers: " + followerNumArray[id]);
+        }
+
+        for (int id : result) {
+            if (followerNumArray[id] < Const.FOLLOWER_THRESHOLD) {
+                System.out.println("⚠️ [TERMINATE] Target User " + id + " has only " + followerNumArray[id] + " followers (Threshold: " + Const.FOLLOWER_THRESHOLD + ")");
+                System.exit(0); //正常終了
+            }
+        }
+
         return result;
     }
 

@@ -31,8 +31,8 @@ echo "Compilation finished."
 # ================================
 # 2. 並列実行設定
 # ================================
-SEED_START=15
-NUM_SEEDS=10           # ★ Seedの数（各Seedで2回実行するので合計実行数は 2 * NUM_SEEDS になります）
+SEED_START=25
+NUM_SEEDS=30           # ★ Seedの数（各Seedで2回実行するので合計実行数は 2 * NUM_SEEDS になります）
 MAX_PARALLEL=10       # ★ 最大並列数
 JAVA_HEAP="2g"
 LOGDIR="logs"

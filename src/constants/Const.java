@@ -7,6 +7,7 @@ public class Const {
     public static final int NUM_OF_SNS_USER = NUM_OF_USER;
     public static int RANDOM_SEED = 0;
     public static double TARGET_DIRECTION = 0;
+    public static int FOLLOWER_THRESHOLD = 100;
 
     // Admin feedback parameter
     public static final int MAX_RECOMMENDATION_POST_LENGTH = 100;
