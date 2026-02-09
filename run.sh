@@ -31,15 +31,22 @@ echo "Compilation finished."
 # ================================
 # 2. 並列実行設定
 # ================================
-SEED_START=25
-NUM_SEEDS=30           # ★ Seedの数（各Seedで2回実行するので合計実行数は 2 * NUM_SEEDS になります）
+# 以下に実行したいSeedをスペース区切りで指定してください
+# TARGET_SEEDS="4 6 7 8 11 12 13 29 31 33 34 41 44 46 51"
+TARGET_SEEDS="4 6 7 8 11 12 13 29 31 33 34 41 44 46 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72"
+
 MAX_PARALLEL=10       # ★ 最大並列数
 JAVA_HEAP="2g"
 LOGDIR="logs"
 
 mkdir -p "$LOGDIR"
 
-echo "Starting simulations for $NUM_SEEDS seeds (x2 targets = $((NUM_SEEDS * 2)) runs)..."
+# 実行数カウント（表示用）
+SEED_COUNT=$(echo $TARGET_SEEDS | wc -w)
+TOTAL_RUNS=$((SEED_COUNT * 2))
+
+echo "Starting simulations for specific seeds: [ $TARGET_SEEDS ]"
+echo "Total runs: $TOTAL_RUNS (x2 targets per seed)..."
 
 # ================================
 # 3. 並列実行関数
@@ -48,8 +55,7 @@ run_one() {
     local seed=$1
     local target=$2
     
-    # ログファイル名にターゲットも含めて区別する
-    # 例: run_10_pos.log, run_10_neg.log
+    # ログファイル名設定
     local label="pos"
     if [ "$target" = "-1.0" ]; then
         label="neg"
@@ -58,8 +64,7 @@ run_one() {
 
     echo "[START] seed=$seed target=$target $(date)" > "$logfile"
 
-    # Java実行 (クラスパス設定に注意: LIBCPに既にbinが含まれていないか確認)
-    # ここでは既存のLIBCP + :bin としています
+    # Java実行
     java -Xmx${JAVA_HEAP} \
          -XX:+ExitOnOutOfMemoryError \
          -cp "${LIBCP}:bin" \
@@ -73,15 +78,16 @@ export -f run_one
 export LIBCP JAVA_HEAP LOGDIR
 
 # ================================
-# 4. タスク生成と実行
+# 4. タスク生成と実行（変更箇所）
 # ================================
-# Seed範囲: SEED_START から (SEED_START + NUM_SEEDS - 1) まで
-# 各Seedについて 1.0 と -1.0 の組み合わせを出力し、xargsで並列実行
+# 配列またはリストからSeedを取り出し、ターゲット(1.0, -1.0)とセットで出力してxargsに渡す
 
-seq $SEED_START $((SEED_START + NUM_SEEDS - 1)) | \
-while read -r seed; do
+for seed in $TARGET_SEEDS; do
+    # パターン1: Target 1.0
     echo "$seed"
     echo "1.0"
+    
+    # パターン2: Target -1.0
     echo "$seed"
     echo "-1.0"
 done | xargs -n 2 -P "$MAX_PARALLEL" bash -c 'run_one "$1" "$2"' _
