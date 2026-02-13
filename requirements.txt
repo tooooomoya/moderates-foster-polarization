@@ -18,3 +18,5 @@ scipy==1.13.1
 six==1.17.0
 tzdata==2025.2
 zipp==3.23.0
+pyyaml
+networkx
