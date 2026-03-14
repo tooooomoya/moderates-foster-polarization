@@ -35,6 +35,7 @@ public class Agent {
         this.id = agentID;
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
         this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * Const.INITIAL_OPINION_STD)); // norm dist
+        //this.intrinsicOpinion = -1.0 + 2.0 * randomGenerator.get().nextDouble(); // uniform dist
         this.opinion = this.intrinsicOpinion;
         this.bc = Const.BOUNDED_CONFIDENCE; // dynamic not static
         this.postProb = Const.INITIAL_PP;

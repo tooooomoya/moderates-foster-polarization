@@ -14,19 +14,19 @@ public class Const {
     public static final int LATEST_POST_LIST_LENGTH = 200;
 
     // network parameter
-    public static final double CONNECTION_PROB_OF_RANDOM_NW = 0.01;
+    public static final double CONNECTION_PROB_OF_RANDOM_NW = 0.005;
     
     // agent parameter
     public static final double BOUNDED_CONFIDENCE = 1.0; // initial bc
     public static final double MINIMUM_BC = 0.2;
-    public static final double REPOST_PROB = 0.4;
+    public static final double REPOST_PROB = 0.25;
     public static final double POST_COST = 0.0;
-    public static final double MU_PARAM = 0.1; // Marginal Utility log func parameter
+    public static final double MU_PARAM = 0.01; // Marginal Utility log func parameter
     public static final double OPINION_PREVALENCE = 0.5;
     public static final double INITIAL_OPINION_STD = 0.6;
     public static final double MAX_FOLLOW_CAPACITY = 10;
     public static final double BC_DEC_RATE = 0.99;
-    public static final double INITIAL_STUBBORNNESS = 0.8;
+    public static final double INITIAL_STUBBORNNESS = 0.8; // now on sensitivity analysis
 
     // user num = 1000
     public static final double INITIAL_CNN_SEED_GRAPH_CONNECT_PROB = 0.2;
