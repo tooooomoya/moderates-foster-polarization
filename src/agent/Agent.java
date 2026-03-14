@@ -35,6 +35,7 @@ public class Agent {
         this.id = agentID;
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
         this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * Const.INITIAL_OPINION_STD)); // norm dist
+        //this.intrinsicOpinion = -1.0 + 2.0 * randomGenerator.get().nextDouble(); // uniform dist
         this.opinion = this.intrinsicOpinion;
         this.bc = Const.BOUNDED_CONFIDENCE; // dynamic not static
         this.postProb = Const.INITIAL_PP;
@@ -257,7 +258,7 @@ public class Agent {
 
             if (Math.abs(post.getPostOpinion() - this.opinion) > this.bc) {
                 //this.bc -= Const.DECREMENT_BC * decayFunc(this.timeStep);
-                this.bc *= 0.99;
+                this.bc *= Const.BC_DEC_RATE;
                 // 0.9995だと弱い
                 // 0.999でも弱い
                 // 0.99だと強いかも
@@ -311,7 +312,7 @@ public class Agent {
         //// exp 
         
         if(this.target) {
-            this.opinion = +1.0;
+            this.opinion = Const.TARGET_DIRECTION;
         }
         
         ////
