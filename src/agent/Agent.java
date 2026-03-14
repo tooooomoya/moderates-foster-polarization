@@ -317,15 +317,6 @@ public class Agent {
         // bc is in [Const.MINIMUM_BC, 1.0]
         this.bc = Math.max(this.bc, Math.min(Const.MINIMUM_BC, 1.0));
 
-
-        //// exp 
-        
-        if(this.target) {
-            this.opinion = Const.TARGET_DIRECTION;
-        }
-        
-        ////
-
         setOpinionClass();
     }
 
