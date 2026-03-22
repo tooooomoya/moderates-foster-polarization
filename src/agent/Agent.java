@@ -36,7 +36,7 @@ public class Agent {
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
         this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * Const.INITIAL_OPINION_STD)); // norm dist
         
-        double minStubborn = 0.7;
+        double minStubborn = 0.5;
         double maxStubborn = 1.0;
         double directedOpinion = this.intrinsicOpinion * Const.TARGET_DIRECTION;
         this.stubbornness = minStubborn + (maxStubborn - minStubborn) * (directedOpinion + 1.0) / 2.0;

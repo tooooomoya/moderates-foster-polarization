@@ -87,6 +87,11 @@ public class GraphVisualize {
             graphModel.getNodeTable().addColumn("bot", Boolean.class);
         }
 
+        Column stubbornness = graphModel.getNodeTable().getColumn("stubbornness");
+        if (stubbornness == null) {
+            graphModel.getNodeTable().addColumn("stubbornness", Double.class);
+        }
+
         for (int i = 0; i < nodeCount; i++) {
             Node node = graphModel.factory().newNode(String.valueOf(i));
             node.setLabel("Node " + i);
@@ -99,6 +104,7 @@ public class GraphVisualize {
             node.setAttribute("shiftedOpinion", agents[i].getOpinion() - agents[i].getIntrinsicOpinion());
             node.setAttribute("intrinsicOpinion", agents[i].getIntrinsicOpinion());
             node.setAttribute("bot", agents[i].getTarget());
+            node.setAttribute("stubbornness", agents[i].getStubbornness());
             graph.addNode(node);
         }
 
