@@ -312,7 +312,7 @@ public class Agent {
         //// exp 
         
         if(this.target) {
-            this.opinion = Const.TARGET_DIRECTION;
+            this.opinion += Const.TARGET_DIRECTION * 0.001;
         }
         
         ////
