@@ -12,6 +12,8 @@ public class Writer {
     private String folderPath;
     private double opinionVar;
     private double postOpinionVar;
+    private double shannonIndex;
+    private double disagreement;
     private int followActionNum;
     private int unfollowActionNum;
     private String[] resultList;
@@ -33,6 +35,8 @@ public class Writer {
         this.folderPath = folderPath;
         this.opinionVar = -1;
         this.postOpinionVar = -1;
+        this.shannonIndex = -1;
+        this.disagreement = -1;
         this.followActionNum = 0;
         this.unfollowActionNum = 0;
         this.rewireActionNum = 0;
@@ -97,6 +101,14 @@ public class Writer {
 
     public void setHighComfortRateNumArray(double[] original) {
         this.highComfortRateNumArray = original.clone();
+    }
+
+    public void setShannonIndex(double value) {
+        this.shannonIndex = value;
+    }
+
+    public void setDisagreement(double value) {
+        this.disagreement = value;
     }
 
     public void clearPostBins() {
@@ -259,29 +271,45 @@ public class Writer {
 
     private boolean handleSingleMetric(StringBuilder sb, String key) {
         switch (key) {
-            case "opinionVar":
+            case "opinionVar" -> {
                 sb.append(String.format("%.4f", this.opinionVar));
                 return true;
-            case "postOpinionVar":
+            }
+            case "postOpinionVar" -> {
                 sb.append(String.format("%.4f", this.postOpinionVar));
                 return true;
-            case "follow":
+            }
+            case "shannonIndex" -> {
+                sb.append(String.format("%.4f", this.shannonIndex));
+                return true;
+            }
+            case "disagreement" -> {
+                sb.append(String.format("%.4f", this.disagreement));
+                return true;
+            }
+            case "follow" -> {
                 sb.append(this.followActionNum);
                 return true;
-            case "unfollow":
+            }
+            case "unfollow" -> {
                 sb.append(this.unfollowActionNum);
                 return true;
-            case "rewire":
+            }
+            case "rewire" -> {
                 sb.append(this.rewireActionNum);
                 return true;
-            case "opinionAvg":
+            }
+            case "opinionAvg" -> {
                 sb.append(String.format("%.4f", this.opinionAvg));
                 return true;
-            case "feedVar":
+            }
+            case "feedVar" -> {
                 sb.append(String.format("%.4f", this.feedVar));
                 return true;
-            default:
+            }
+            default -> {
                 return false;
+            }
         }
     }
 

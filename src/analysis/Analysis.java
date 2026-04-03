@@ -94,6 +94,56 @@ public class Analysis {
         return squaredDiffSum / num;
     }
 
+    // compute disagreement (metrics representing the degree of echo chamber)
+    public double computeDisagreement(Agent[] agentSet, double[][] W) {
+        if (agentSet.length == 0) return -1;
+
+        double sum = 0.0;
+        double weightSum = 0.0;
+
+        for(int i = 0; i < agentSet.length ; i++){
+            for(int j = 0; j < agentSet.length; j++){
+                if(i != j && W[i][j] > 0.0){
+                    double diff = agentSet[i].getOpinion() - agentSet[j].getOpinion();
+                    sum += W[i][j] * (diff * diff);
+                    weightSum += W[i][j];
+                }
+            }
+        }
+
+        return (weightSum > 0) ? sum / weightSum : 0;
+    }
+
+    // compute Shannon-Wiener index to represent diversity of opinions
+    public double computeShannonWienerIndex(Agent[] agentSet) {
+        int totalAgents = 0;
+        int[] counts = new int[Const.NUM_OF_BINS_OF_OPINION];
+
+        // 1. Count agents in each opinion bin
+        for (Agent agent : agentSet) {
+            if (!agent.getTarget()) { // Assuming we exclude target/media nodes
+                int bin = agent.getOpinionClass();
+                if (bin >= 0 && bin < counts.length) {
+                    counts[bin]++;
+                    totalAgents++;
+                }
+            }
+        }
+
+        if (totalAgents == 0) return 0.0;
+
+        // 2. Calculate H' = -sum(pi * ln(pi))
+        double shannonIndex = 0.0;
+        for (int count : counts) {
+            if (count > 0) {
+                double p = (double) count / totalAgents;
+                shannonIndex -= p * Math.log(p);
+            }
+        }
+
+        return shannonIndex;
+    }
+
     // compute mean of inner opinions
     public double computeMeanOpinion(Agent[] agentSet) {
         int num = 0;

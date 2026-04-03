@@ -231,6 +231,8 @@ public class OpinionDynamics {
             writer.setCRateVarArray(analyzer.getCRateVarArray());
             analyzer.computeHighComfortRateNumArray(agentSet);
             writer.setHighComfortRateNumArray(analyzer.getHighComfortRateNumArray());
+            writer.setShannonIndex(analyzer.computeShannonWienerIndex(agentSet));
+            writer.setDisagreement(analyzer.computeDisagreement(agentSet, W));
             writer.write();
         }
     }
