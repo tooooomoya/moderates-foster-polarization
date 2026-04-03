@@ -342,9 +342,11 @@ public class Agent {
         }
     }
 
-    public List<Post> repost() {
+    // 引数に現在のstepを追加
+    public List<Post> repost(int currentStep) {
         List<Post> candidates = new ArrayList<>();
         List<Post> repostedPostList = new ArrayList<>();
+        
         if (this.feed.isEmpty()) {
             return Collections.emptyList();
         }
@@ -360,6 +362,17 @@ public class Agent {
                 if (randomGenerator.get().nextDouble() < this.repostProb) {
                     post.receiveLike();
                     repostedPostList.add(post);
+
+                    // --- ここでCSVに追記 ---
+                    // ※ this.id や this.opinionClass は Agentクラスに定義されている前提です
+                    RepostLogger.log(
+                        currentStep,
+                        post.getPostId(),
+                        post.getPostUserId(),
+                        this.id,            // RepostしたエージェントのID
+                        this.opinion,       // Repostした時点の意見
+                        this.opinionClass   // Repostしたエージェントのクラス
+                    );
                 }
             }
         } else {

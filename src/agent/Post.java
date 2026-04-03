@@ -16,6 +16,17 @@ public class Post {
         this.postId = postIdCounter++;
     }
 
+    // ----------------------------------------------------
+    // only for copying post (see copyPost() method below)
+    // ----------------------------------------------------
+    private Post(int postUserId, double postOpinion, int postedStep, int recievedLike, int postId){
+        this.postUserId = postUserId;
+        this.postOpinion = postOpinion;
+        this.postedStep = postedStep;
+        this.recievedLike = recievedLike; 
+        this.postId = postId;
+    }
+
     // Getter
     public int getPostUserId() {
         return postUserId;
@@ -52,8 +63,7 @@ public class Post {
 
     // other
     public Post copyPost(){
-        Post copiedPost = new Post(this.postUserId, this.postOpinion, this.postedStep);
-        return copiedPost;
+        return new Post(this.postUserId, this.postOpinion, this.postedStep, this.recievedLike, this.postId);
     }
 
     public void receiveLike(){

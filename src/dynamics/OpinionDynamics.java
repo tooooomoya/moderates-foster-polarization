@@ -159,7 +159,7 @@ public class OpinionDynamics {
                 agent.updatePostProb();
 
                 /////// repost (like)
-                List<Post> repostedPostList = agent.repost();
+                List<Post> repostedPostList = agent.repost(step);
                 for (Post repostedPost : repostedPostList) {
                     repostNetwork[agentId][repostedPost.getPostUserId()]++;
                     for (Agent otherAgent : agentSet) {
@@ -276,10 +276,14 @@ public class OpinionDynamics {
             return;
         }
 
+        RepostLogger.init(Const.RESULT_FOLDER_PATH);
+
         Instant start = Instant.now();
         
         OpinionDynamics simulator = new OpinionDynamics();
         simulator.evolve();
+
+        RepostLogger.close();
 
         Instant end = Instant.now();
 
