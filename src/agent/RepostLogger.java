@@ -13,18 +13,21 @@ public class RepostLogger {
     public static void init(String folderPath) {
         try {
             File file = new File(folderPath + "repost_log.csv");
-            // ファイルが存在しない場合はヘッダーを書き込む
-            boolean isNewFile = !file.exists() || file.length() == 0;
             
-            // trueを指定することで追記(Append)モードになる
-            FileWriter fw = new FileWriter(file, true);
+            // 親フォルダが存在しない場合は念のため作成しておく
+            if (file.getParentFile() != null) {
+                file.getParentFile().mkdirs();
+            }
+
+            // ★ 第二引数を false にする（あるいは書かない）ことで、既存のファイルを上書き（リセット）する
+            FileWriter fw = new FileWriter(file, false);
             BufferedWriter bw = new BufferedWriter(fw);
             out = new PrintWriter(bw);
 
-            if (isNewFile) {
-                out.println("step,original_post_id,original_author_id,reposter_id,reposter_opinion,reposter_class");
-                out.flush();
-            }
+            // 毎回ファイルを新しく作り直すため、無条件でヘッダーを書き込む
+            out.println("step,original_post_id,original_author_id,reposter_id,reposter_opinion,reposter_class");
+            out.flush(); // ヘッダーを即座に書き出す
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
