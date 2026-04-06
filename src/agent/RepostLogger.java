@@ -14,7 +14,7 @@ public class RepostLogger {
         try {
             File file = new File(folderPath + "repost_log.csv");
             // ファイルが存在しない場合はヘッダーを書き込む
-            boolean isNewFile = !file.exists();
+            boolean isNewFile = !file.exists() || file.length() == 0;
             
             // trueを指定することで追記(Append)モードになる
             FileWriter fw = new FileWriter(file, true);
@@ -23,6 +23,7 @@ public class RepostLogger {
 
             if (isNewFile) {
                 out.println("step,original_post_id,original_author_id,reposter_id,reposter_opinion,reposter_class");
+                out.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();
