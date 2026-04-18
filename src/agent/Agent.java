@@ -36,11 +36,19 @@ public class Agent {
         this.stubbornness = Const.INITIAL_STUBBORNNESS;
         this.intrinsicOpinion = Math.max(-1.0, Math.min(1.0, randomGenerator.get().nextGaussian() * Const.INITIAL_OPINION_STD)); // norm dist
         
-        double minStubborn = 0.6;
-        double maxStubborn = 1.0;
-        double directedOpinion = this.intrinsicOpinion * Const.TARGET_DIRECTION;
-        this.stubbornness = minStubborn + (maxStubborn - minStubborn) * (directedOpinion + 1.0) / 2.0;
-        
+        // double minStubborn = 0.6;
+        // double maxStubborn = 1.0;
+        // double directedOpinion = this.intrinsicOpinion * Const.TARGET_DIRECTION;
+        // this.stubbornness = minStubborn + (maxStubborn - minStubborn) * (directedOpinion + 1.0) / 2.0;
+        double x = this.intrinsicOpinion * Const.TARGET_DIRECTION;
+        if (x <= -0.6) {
+            this.stubbornness = 0.8;
+        } else if (x >= 0.6) {
+            this.stubbornness = 1.0;
+        } else {
+            this.stubbornness = 0.6;
+        }
+
         this.opinion = this.intrinsicOpinion;
         this.bc = Const.BOUNDED_CONFIDENCE; // dynamic not static
         this.postProb = Const.INITIAL_PP;

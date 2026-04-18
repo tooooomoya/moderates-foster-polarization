@@ -5,8 +5,15 @@ import java.util.*;
 import rand.randomGenerator;
 
 public class ConnectingNearestNeighborNetwork extends Network {
-    private double p; // prob of setting potential edge as actual edge
-    private Set<Edge> potentialEdges;
+
+    private double p;
+    
+    // O(1) Random Access and O(1) Contains Check for Potential Edges
+    private List<Edge> potentialEdgeList;
+    private Set<Edge> potentialEdgeSet;
+    
+    // Degree Cache for O(1) lookups
+    private int[] nodeDegrees;
 
     private static class Edge {
         int from, to;
@@ -18,8 +25,7 @@ public class ConnectingNearestNeighborNetwork extends Network {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Edge))
-                return false;
+            if (!(o instanceof Edge)) return false;
             Edge other = (Edge) o;
             return this.from == other.from && this.to == other.to;
         }
@@ -33,7 +39,33 @@ public class ConnectingNearestNeighborNetwork extends Network {
     public ConnectingNearestNeighborNetwork(int size, double p) {
         super(size);
         this.p = p;
-        this.potentialEdges = new HashSet<>();
+        this.potentialEdgeList = new ArrayList<>();
+        this.potentialEdgeSet = new HashSet<>();
+        this.nodeDegrees = new int[size];
+    }
+
+    /**
+     * Wrapper for setEdge that safely updates the degree cache in O(1) time.
+     * It ensures we are counting unique neighbors (undirected degree equivalent),
+     * matching the logic of the original O(N) loop.
+     */
+    private void addEdgeWithCache(int from, int to, double weight) {
+        boolean alreadyConnected = (adjacencyMatrix[from][to] > 0 || adjacencyMatrix[to][from] > 0);
+        
+        setEdge(from, to, weight);
+        
+        if (!alreadyConnected) {
+            nodeDegrees[from]++;
+            nodeDegrees[to]++;
+        }
+    }
+
+    private void addPotentialEdge(int from, int to) {
+        Edge e = new Edge(from, to);
+        // Only add to the list if it wasn't already in the set
+        if (potentialEdgeSet.add(e)) {
+            potentialEdgeList.add(e);
+        }
     }
 
     @Override
@@ -41,70 +73,119 @@ public class ConnectingNearestNeighborNetwork extends Network {
         System.out.println("start making network");
 
         double r = 0.01;
+        double reciprocityProb = 0.2;
 
         int currentSize = 2;
-        
-        setEdge(0, 1, 1);
-        setEdge(1, 0, 1);
+
+        addEdgeWithCache(0, 1, 1);
+        addEdgeWithCache(1, 0, 1);
 
         while (currentSize < getSize()) {
             if (randomGenerator.get().nextDouble() < 1 - this.p) {
-                // 新しいノードを追加
+                // add a new node 
                 int newNode = currentSize++;
-                int v = randomGenerator.get().nextInt(newNode);
-                setEdge(newNode, v, 1);
+                // a new node is connected to an existing node based on similarity
+                int v = chooseNodeBySimilarity(newNode, agentSet);
+                addEdgeWithCache(newNode, v, 1);
+                
+                if (randomGenerator.get().nextDouble() < reciprocityProb) {
+                    addEdgeWithCache(v, newNode, 1);
+                }
 
                 for (int neighbor = 0; neighbor < newNode; neighbor++) {
                     if (adjacencyMatrix[v][neighbor] > 0 && neighbor != newNode) {
-                        potentialEdges.add(new Edge(newNode, neighbor));
+                        addPotentialEdge(newNode, neighbor);
+                        if (randomGenerator.get().nextDouble() < reciprocityProb) {
+                            addPotentialEdge(neighbor, newNode);
+                        }
                     }
                 }
             } else {
                 if (randomGenerator.get().nextDouble() < 1 - r) { // CNN with random links (CNNR)
-                    // convert potential edge to actual edge
-                    if (!potentialEdges.isEmpty()) {
-                        List<Edge> list = new ArrayList<>(potentialEdges);
+                    // convert potential edge to actual edge in O(1) time
+                    if (!potentialEdgeList.isEmpty()) {
+                        int randIndex = randomGenerator.get().nextInt(potentialEdgeList.size());
+                        Edge edge = potentialEdgeList.get(randIndex);
+                        
+                        // O(1) removal by swapping with the last element
+                        Edge lastEdge = potentialEdgeList.get(potentialEdgeList.size() - 1);
+                        potentialEdgeList.set(randIndex, lastEdge);
+                        potentialEdgeList.remove(potentialEdgeList.size() - 1);
+                        potentialEdgeSet.remove(edge);
 
-                        list.sort(Comparator.comparingInt((Edge e) -> e.from).thenComparingInt(e -> e.to));
-                        Edge edge = list.get(randomGenerator.get().nextInt(list.size()));
-                        setEdge(edge.from, edge.to, 1);
-                        potentialEdges.remove(edge);
+                        addEdgeWithCache(edge.from, edge.to, 1);
+                        if (randomGenerator.get().nextDouble() < reciprocityProb) {
+                            addEdgeWithCache(edge.to, edge.from, 1);
+                        }
                     }
                 } else {
-                    // add link randomly
-                    int a = randomGenerator.get().nextInt(currentSize);
-                    int b;
+                    // add link randomly with FAIL-SAFE limit
+                    int a;
+                    int attemptsA = 0;
+                    int maxAttempts = 50; 
+                    
+                    // Fail-safe: Prevent infinite loop if 'a' is already fully connected
                     do {
-                        b = randomGenerator.get().nextInt(currentSize);
-                    } while (a == b || adjacencyMatrix[a][b] > 0);
+                        a = randomGenerator.get().nextInt(currentSize);
+                        attemptsA++;
+                    } while (nodeDegrees[a] >= currentSize - 1 && attemptsA < maxAttempts);
 
-                    setEdge(a, b, 1);
+                    // Only proceed if we found a valid, non-saturated node
+                    if (nodeDegrees[a] < currentSize - 1) {
+                        int b;
+                        int attemptsB = 0;
+                        do {
+                            b = randomGenerator.get().nextInt(currentSize);
+                            attemptsB++;
+                        } while ((a == b || adjacencyMatrix[a][b] > 0) && attemptsB < maxAttempts);
+
+                        if (a != b && adjacencyMatrix[a][b] == 0) {
+                            addEdgeWithCache(a, b, 1);
+                            if (randomGenerator.get().nextDouble() < reciprocityProb) {
+                                addEdgeWithCache(b, a, 1);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    private int chooseNodeByDegree(int maxIndex) {
-        List<Integer> candidates = new ArrayList<>();
-        for (int i = 0; i < maxIndex; i++) {
-            int degree = 0;
-            for (int j = 0; j < maxIndex; j++) {
-                if (adjacencyMatrix[i][j] > 0 || adjacencyMatrix[j][i] > 0) {
-                    degree++;
-                }
-            }
+    private int chooseNodeBySimilarity(int maxIndex, Agent[] agents) {
+        double alpha = 0.7;   // degree effect
+        double lambda = 5.0;  // similarity decay
 
-            int weight = (int) Math.floor(Math.log(degree + 1));
-            for (int k = 0; k < weight; k++) {
-                candidates.add(i);
+        double[] weights = new double[maxIndex];
+        double sum = 0.0;
+
+        int i = maxIndex; // new node index
+
+        for (int j = 0; j < maxIndex; j++) {
+            // O(1) lookup replaces the O(N) internal loop
+            int degree = nodeDegrees[j];
+            double degreeTerm = Math.pow(degree + 1, alpha);
+
+            // similarity
+            double diff = Math.abs(agents[i].getIntrinsicOpinion() - agents[j].getIntrinsicOpinion());
+            double sim = Math.exp(-lambda * diff);
+
+            weights[j] = degreeTerm * sim;
+            sum += weights[j];
+        }
+
+        // Failsafe in case sum is 0 (prevents division by zero or infinite loops)
+        if (sum == 0) return randomGenerator.get().nextInt(maxIndex); 
+
+        double r = randomGenerator.get().nextDouble() * sum;
+        double cum = 0.0;
+
+        for (int j = 0; j < maxIndex; j++) {
+            cum += weights[j];
+            if (cum >= r) {
+                return j;
             }
         }
 
-        if (candidates.isEmpty()) {
-            return randomGenerator.get().nextInt(maxIndex);
-        }
-
-        return candidates.get(randomGenerator.get().nextInt(candidates.size()));
+        return maxIndex - 1; // fallback
     }
-
 }

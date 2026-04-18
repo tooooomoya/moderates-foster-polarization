@@ -46,14 +46,15 @@ public class OpinionDynamics {
     }
 
     private void setFromInitial() {
-        setNetwork();
         setAgents();
+        setNetwork();
+        setFollowerInfo();
     }
 
     private void setNetwork() {
         ///// you can change the initial network bellow
         // this.network = new RandomNetwork(agentNum, connectionProbability);
-        this.network = new ConnectingNearestNeighborNetwork(agentNum, 0.7);
+        this.network = new ConnectingNearestNeighborNetwork(agentNum, 0.5);
         // this.network = new WattsStrogatzNetwork(agentNum, 4, 0.1);
         //this.network = new BarabasiAlbertNetwork(agentNum, 2);
         /////
@@ -63,13 +64,19 @@ public class OpinionDynamics {
     }
 
     private void setAgents() {
-        double[][] tempAdjacencyMatrix = this.network.getAdjacencyMatrix();
         for (int i = 0; i < agentNum; i++) {
             agentSet[i] = new Agent(i);
-            agentSet[i].setFollowList(tempAdjacencyMatrix);
-            agentSet[i].setFollowerNum(tempAdjacencyMatrix);
         }
     }
+
+    private void setFollowerInfo() {
+        double[][] tempAdjacencyMatrix = this.network.getAdjacencyMatrix();
+        for (Agent agent : agentSet) {
+            agent.setFollowerNum(tempAdjacencyMatrix);
+            agent.setFollowList(tempAdjacencyMatrix);
+        }
+    }
+
 
     private void setCustomized() {
         this.network = new ReadNetwork(agentNum, Const.READ_NW_PATH);
