@@ -37,7 +37,7 @@ public class Const {
     public static final double INCREMENT_PP = 0.1;
     public static final double DECREMENT_PP = INCREMENT_PP;
 
-    public static final double INITIAL_PU = 0.01; // Prob of Using platform (Accessing platform)
+    public static final double INITIAL_PU = 0.005; // Prob of Using platform (Accessing platform)
     public static final double MAX_PU = INITIAL_PU;
     public static final double MIN_PU = INITIAL_PU;
     public static final double INCREMENT_PU = 0.01;
