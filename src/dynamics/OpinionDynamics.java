@@ -72,7 +72,6 @@ public class OpinionDynamics {
     private void setFollowerInfo() {
         double[][] tempAdjacencyMatrix = this.network.getAdjacencyMatrix();
         for (Agent agent : agentSet) {
-            agent.setFollowerNum(tempAdjacencyMatrix);
             agent.setFollowList(tempAdjacencyMatrix);
         }
     }
@@ -134,7 +133,6 @@ public class OpinionDynamics {
             analyzer.resetFeedMap();
             writer.clearPostBins();
             writer.setSimulationStep(step);
-            double[][] W = admin.getAdjacencyMatrix();
             List<Post> postList = new ArrayList<>();
 
             List<Agent> shuffledAgents = new ArrayList<>(Arrays.asList(agentSet));
@@ -150,7 +148,6 @@ public class OpinionDynamics {
 
             for (Agent agent : shuffledAgents) {
                 int agentId = agent.getId();
-                agent.setFollowerNum(W);
                 agent.setTimeStep(step);
                 agent.resetUsed();
 
@@ -169,10 +166,8 @@ public class OpinionDynamics {
                 List<Post> repostedPostList = agent.repost(step);
                 for (Post repostedPost : repostedPostList) {
                     repostNetwork[agentId][repostedPost.getPostUserId()]++;
-                    for (Agent otherAgent : agentSet) {
-                        if (W[otherAgent.getId()][agentId] > 0.00) { // add posts to followers' feeds
-                            otherAgent.addToPostCash(repostedPost);
-                        }
+                    for (int followerId : admin.getFollowers(agentId)) {
+                        agentSet[followerId].addToPostCash(repostedPost);
                     }
                     agentSet[repostedPost.getPostUserId()].receiveLike();
                 }
@@ -186,10 +181,8 @@ public class OpinionDynamics {
                 /////// post
                 if (randomGenerator.get().nextDouble() < agent.getPostProb()) {
                     Post post = agent.makePost(step);
-                    for (Agent otherAgent : agentSet) {
-                        if (W[otherAgent.getId()][agentId] > 0.00) {
-                            otherAgent.addToPostCash(post);
-                        }
+                    for (int followerId : admin.getFollowers(agentId)) {
+                        agentSet[followerId].addToPostCash(post);
                     }
                     writer.setPostBins(post);
                     analyzer.setPostCash(post);
@@ -200,19 +193,20 @@ public class OpinionDynamics {
                 admin.updateAdjacencyMatrix(agentId, followedIds, unfollowedId);
                 agent.resetPostCash();
                 agent.resetFeed();
-                ASChecker.assertionChecker(agentSet, admin, agentNum, step);
-                    if (followedIds[0] >= 0) {
-                        followActionNum++;
-                    }
-                
+
+                if (followedIds[0] >= 0) {
+                    followActionNum++;
+                }
                 if (unfollowedId >= 0) {
                     unfollowActionNum++;
                 }
             }
 
+            ASChecker.assertionChecker(agentSet, admin, agentNum, step);
+
             if (step % 5000 == 0) {
-                // export gexf
-                network.setAdjacencyMatrix(admin.getAdjacencyMatrix());
+                double[][] W5k = admin.getAdjacencyMatrix();
+                network.setAdjacencyMatrix(W5k);
                 gephi.updateGraph(agentSet, network);
                 gephi.exportGraph(step, folerPath);
                 repostGephi.updateGraph(agentSet, repostNetwork, step);
@@ -220,8 +214,8 @@ public class OpinionDynamics {
                 for (int[] repostNetwork1 : repostNetwork) {
                     Arrays.fill(repostNetwork1, 0);
                 }
-                writer.writeDegrees(W, folerPath);
-                writer.writeClusteringCoefficients(analyzer.computeClusteringCoefficients(W), folerPath);
+                writer.writeDegrees(W5k, folerPath);
+                writer.writeClusteringCoefficients(analyzer.computeClusteringCoefficients(W5k), folerPath);
             }
             // export metrics
             writer.setOpinionVar(analyzer.computeVarianceOpinion(agentSet));
@@ -239,9 +233,10 @@ public class OpinionDynamics {
             analyzer.computeHighComfortRateNumArray(agentSet);
             writer.setHighComfortRateNumArray(analyzer.getHighComfortRateNumArray());
             writer.setShannonIndex(analyzer.computeShannonWienerIndex(agentSet));
-            writer.setDisagreement(analyzer.computeDisagreement(agentSet, W));
+            writer.setDisagreement(admin.computeDisagreement(agentSet));
             writer.write();
         }
+        writer.flush();
     }
 
     public static void main(String[] args) {

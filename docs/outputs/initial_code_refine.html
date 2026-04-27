@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Refinement Log — SNAM2026</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f5f7fa; color: #222; }
+  header { background: #1a2540; color: #fff; padding: 2rem 2.5rem 1.5rem; }
+  header h1 { margin: 0 0 0.3rem; font-size: 1.7rem; letter-spacing: 0.02em; }
+  header p  { margin: 0; opacity: 0.75; font-size: 0.95rem; }
+  main { max-width: 960px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
+  section { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.10); margin-bottom: 2rem; overflow: hidden; }
+  .section-header { background: #2c3e6b; color: #fff; padding: 0.8rem 1.4rem; display: flex; align-items: center; gap: 0.7rem; }
+  .section-header h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+  .badge { font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-weight: 700; letter-spacing: 0.04em; }
+  .badge-done   { background: #27ae60; color: #fff; }
+  .badge-skip   { background: #e67e22; color: #fff; }
+  .badge-defer  { background: #8e44ad; color: #fff; }
+  .section-body { padding: 1.2rem 1.4rem; }
+  .file-tag { display: inline-block; font-family: 'Courier New', monospace; font-size: 0.82rem; background: #eef1f7; border: 1px solid #c8d0e0; border-radius: 4px; padding: 0.15rem 0.45rem; margin-bottom: 0.5rem; }
+  h3 { margin: 1.1rem 0 0.4rem; font-size: 0.97rem; color: #1a2540; }
+  p, li { line-height: 1.65; font-size: 0.93rem; margin: 0.3rem 0; }
+  ul { padding-left: 1.4rem; }
+  pre { background: #1e2433; color: #c9d1e0; border-radius: 6px; padding: 1rem 1.2rem; font-size: 0.82rem; overflow-x: auto; line-height: 1.55; margin: 0.6rem 0; }
+  code { font-family: 'Courier New', monospace; }
+  .diff-add { color: #5cb85c; }
+  .diff-del { color: #d9534f; }
+  .note { background: #fef9ec; border-left: 4px solid #f0ad4e; border-radius: 4px; padding: 0.7rem 1rem; font-size: 0.9rem; margin-top: 0.8rem; }
+  .note strong { color: #c87800; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 0.6rem; }
+  th { background: #eef1f7; text-align: left; padding: 0.5rem 0.8rem; border-bottom: 2px solid #c8d0e0; }
+  td { padding: 0.45rem 0.8rem; border-bottom: 1px solid #e8ecf3; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  footer { text-align: center; color: #8899aa; font-size: 0.82rem; padding: 1rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SNAM2026 — Code Refinement Log</h1>
+  <p>Based on initial review findings &middot; 2026-04-27</p>
+</header>
+
+<main>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>Summary of Changes</h2>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr><th>File / Target</th><th>Change</th><th>Status</th></tr>
+      <tr><td><code>src/constants/Const.java</code></td><td>Added <code>shannonIndex</code>, <code>disagreement</code> to <code>RESULT_LIST</code></td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>src/admin/AdminOptim.java</code></td><td>Replaced dense W matrix with adjacency lists; on-demand matrix generation; O(edges) disagreement</td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>src/agent/Agent.java</code></td><td>Removed <code>followerNum</code>, <code>setFollowerNum()</code>, <code>decayFunc()</code>, and dead commented-out code</td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>src/dynamics/OpinionDynamics.java</code></td><td>All O(N) distribution loops replaced with adjacency-list iteration; <code>AssertionCheck</code> moved outside agent loop; <code>writer.flush()</code> added</td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>src/writer/Writer.java</code></td><td>Batch CSV output (1000 steps/file); removed unused <code>feedVar</code> scalar; added <code>flush()</code></td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>result-summary.ipynb</code></td><td><code>load_post_data_all_steps()</code> and <code>load_and_process_seed()</code> updated for batch CSV format</td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td><code>polarization-analysis.ipynb</code></td><td><code>load_and_process_seed()</code> and <code>load_and_process_opinion_seed()</code> updated for batch CSV format</td><td><span class="badge badge-done">DONE</span></td></tr>
+      <tr><td>postProb / useProb constants frozen (MAX=MIN=INITIAL)</td><td>Deferred — noted for future report</td><td><span class="badge badge-defer">DEFERRED</span></td></tr>
+      <tr><td>Hardcoded comfort threshold uses <code>MINIMUM_BC</code> instead of dynamic bc</td><td>Deferred — noted for future report</td><td><span class="badge badge-defer">DEFERRED</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>1 &nbsp;Const.java — Shannon index &amp; disagreement added to RESULT_LIST</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <span class="file-tag">src/constants/Const.java</span>
+    <p>
+      The two primary echo-chamber metrics — Shannon–Wiener diversity index and
+      weighted mean-squared-opinion disagreement across edges — were computed but never
+      written to CSV because they were absent from <code>RESULT_LIST</code>.
+    </p>
+    <pre><code><span class="diff-del">- { "opinionVar", "postOpinionVar", "follow", "unfollow", "rewire", "opinionAvg",</span>
+<span class="diff-del">-   "feedPostOpinionMean_0", ... }</span>
+<span class="diff-add">+ { "opinionVar", "postOpinionVar", "follow", "unfollow", "rewire", "opinionAvg",</span>
+<span class="diff-add">+   "shannonIndex", "disagreement",</span>
+<span class="diff-add">+   "feedPostOpinionMean_0", ... }</span></code></pre>
+    <p>
+      <code>Writer.handleSingleMetric()</code> already contained cases for both keys, so
+      they are written correctly once the keys are present in the list.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>2 &nbsp;AdminOptim.java — Adjacency-list refactor</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <span class="file-tag">src/admin/AdminOptim.java</span>
+
+    <h3>Motivation</h3>
+    <p>
+      The previous implementation stored the social graph as a dense
+      <code>double[N][N]</code> matrix and iterated the full N-agent array to find
+      followers of each posting agent — an O(N) scan per post per step, giving
+      O(N·posts·steps) overall.  With N = 1000 and 40 000 steps this compounds to
+      roughly 40 million unnecessary checks per simulation run.
+    </p>
+
+    <h3>New representation</h3>
+    <pre><code>private Set&lt;Integer&gt;[] followees;  // followees[i] = agents i follows
+private Set&lt;Integer&gt;[] followers;  // followers[j] = agents that follow j</code></pre>
+    <p>
+      Both sets are built once from the initial W matrix in the constructor (O(N²) one-time
+      cost) and updated incrementally in <code>updateAdjacencyMatrix()</code> in O(1) per
+      edge change.
+    </p>
+
+    <h3>On-demand matrix generation</h3>
+    <pre><code>/** Only called every 5000 steps for GEXF export / degree / clustering. */
+public double[][] getAdjacencyMatrix() {
+    double[][] matrix = new double[n][n];
+    for (int i = 0; i &lt; n; i++)
+        for (int j : followees[i])
+            matrix[i][j] = 1.0;
+    return matrix;
+}</code></pre>
+    <p>
+      Code paths that require the full matrix (GEXF export, degree CSV, clustering
+      coefficients) call <code>getAdjacencyMatrix()</code> locally at the 5 000-step
+      checkpoint — not every step.
+    </p>
+
+    <h3>O(edges) disagreement computation</h3>
+    <pre><code>public double computeDisagreement(Agent[] agentSet) {
+    double sum = 0.0;  int edgeCount = 0;
+    for (int i = 0; i &lt; n; i++)
+        for (int j : followees[i]) {
+            double diff = agentSet[i].getOpinion() - agentSet[j].getOpinion();
+            sum += diff * diff;  edgeCount++;
+        }
+    return edgeCount &gt; 0 ? sum / edgeCount : 0.0;
+}</code></pre>
+    <p>
+      This replaces the prior <code>analyzer.computeDisagreement(agentSet, W)</code> which
+      scanned all N² entries.  The call site in
+      <code>OpinionDynamics.evolve()</code> was updated accordingly.
+    </p>
+
+    <h3>Incremental edge update</h3>
+    <p>
+      <code>updateAdjacencyMatrix(userId, followedIds, unfollowedId)</code> now updates
+      both sets and <code>followerNumArray</code> in O(1) using
+      <code>Set.add()</code> / <code>Set.remove()</code>, replacing the previous full-matrix
+      cell write.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>3 &nbsp;Agent.java — Dead code removal</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <span class="file-tag">src/agent/Agent.java</span>
+    <table>
+      <tr><th>Removed symbol</th><th>Reason</th></tr>
+      <tr><td><code>private int followerNum</code></td><td>Redundant with <code>AdminOptim.followerNumArray</code>; was updated by an O(N) scan each step</td></tr>
+      <tr><td><code>getFollwerNum()</code> [sic]</td><td>Getter for the removed field; never read by callers after Admin refactor</td></tr>
+      <tr><td><code>setFollowerNum(double[][] W)</code></td><td>O(N) loop over full W row — eliminated together with per-step W materialisation</td></tr>
+      <tr><td>Commented-out <code>follow()</code> block</td><td>Dead code retained across multiple refactor iterations</td></tr>
+      <tr><td><code>decayFunc(double time)</code></td><td>Always returned 1.0 (exponential lambda was 0); no callers after prior cleanup</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>4 &nbsp;OpinionDynamics.java — Algorithm and structure fixes</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <span class="file-tag">src/dynamics/OpinionDynamics.java</span>
+
+    <h3>4.1 — Per-step W matrix removed</h3>
+    <p>
+      <code>double[][] W = admin.getAdjacencyMatrix();</code> was materialising a full
+      N×N matrix at the start of every simulation step.  This line is removed.
+      All per-step logic now uses adjacency sets via <code>admin.getFollowers(agentId)</code>.
+    </p>
+
+    <h3>4.2 — Post and repost distribution: O(N) → O(degree)</h3>
+    <pre><code><span class="diff-del">// OLD — iterates all N agents</span>
+<span class="diff-del">for (Agent otherAgent : agentSet) {</span>
+<span class="diff-del">    if (W[otherAgent.getId()][agentId] &gt; 0.00)</span>
+<span class="diff-del">        otherAgent.addToPostCash(post);</span>
+<span class="diff-del">}</span>
+<span class="diff-add">// NEW — iterates only followers</span>
+<span class="diff-add">for (int followerId : admin.getFollowers(agentId)) {</span>
+<span class="diff-add">    agentSet[followerId].addToPostCash(post);</span>
+<span class="diff-add">}</span></code></pre>
+    <p>Applied identically to both post distribution and repost distribution.</p>
+
+    <h3>4.3 — AssertionChecker moved outside the agent loop</h3>
+    <p>
+      Previously <code>ASChecker.assertionChecker()</code> was called once per agent
+      inside the shuffled-agent loop, re-validating global invariants N times per step.
+      It is now called once after the loop completes, which is both semantically correct
+      (post-step validation) and reduces redundant checks.
+    </p>
+    <pre><code><span class="diff-add">}  // end agent loop</span>
+<span class="diff-add">ASChecker.assertionChecker(agentSet, admin, agentNum, step);</span></code></pre>
+
+    <h3>4.4 — 5 000-step checkpoint uses local W</h3>
+    <p>
+      GEXF export, degree CSV, and clustering computation still require the full matrix.
+      A locally-scoped <code>W5k</code> is generated on demand at the checkpoint:
+    </p>
+    <pre><code>if (step % 5000 == 0) {
+    double[][] W5k = admin.getAdjacencyMatrix();
+    network.setAdjacencyMatrix(W5k);
+    gephi.updateGraph(agentSet, network);
+    gephi.exportGraph(step, folerPath);
+    ...
+    writer.writeDegrees(W5k, folerPath);
+    writer.writeClusteringCoefficients(
+        analyzer.computeClusteringCoefficients(W5k), folerPath);
+}</code></pre>
+
+    <h3>4.5 — writer.flush() after main loop</h3>
+    <p>
+      Ensures the final partial batch (steps 40 001–39 999 of the last partial window)
+      is flushed to disk at simulation end rather than silently discarded.
+    </p>
+
+    <h3>4.6 — setFollowerInfo() cleaned</h3>
+    <p>
+      <code>agent.setFollowerNum(tempAdjacencyMatrix)</code> removed from
+      <code>setFollowerInfo()</code>; only <code>agent.setFollowList()</code> is kept.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>5 &nbsp;Writer.java — Batch CSV output (1 000 steps/file)</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <span class="file-tag">src/writer/Writer.java</span>
+
+    <h3>Motivation</h3>
+    <p>
+      The prior design opened and closed a new file for every simulation step, producing
+      40 000 separate CSVs per run per output type.  This creates excessive filesystem
+      pressure and makes notebook aggregation slow (40 000 <code>pd.read_csv</code> calls).
+    </p>
+
+    <h3>New batch design</h3>
+    <p>
+      Three <code>StringBuilder</code> buffers (<code>metricsBuf</code>,
+      <code>postsBuf</code>, <code>opinionBuf</code>) accumulate rows.
+      When the buffer reaches <code>BATCH_SIZE = 1000</code> steps, a private
+      <code>flushBatch()</code> method writes three files and resets the buffers:
+    </p>
+    <pre><code>metrics/result_0_999.csv
+posts/post_result_0_999.csv
+opinion/opinion_result_0_999.csv
+
+metrics/result_1000_1999.csv
+...
+metrics/result_39000_39999.csv</code></pre>
+    <p>
+      Each batch file is a standard multi-row CSV with a header row and one data row per
+      step.  The public <code>flush()</code> method handles the final partial batch at
+      end-of-simulation.
+    </p>
+
+    <h3>Dead code removed</h3>
+    <ul>
+      <li><code>private double feedVar</code> — scalar field never set from outside; its
+          <code>"feedVar"</code> <code>RESULT_LIST</code> key was also absent, making it
+          completely inert.  Removed along with <code>setFeedVar()</code>.</li>
+      <li><code>handleSingleMetric()</code> renamed to <code>appendSingleMetric()</code>
+          to reflect that it appends to a <code>StringBuilder</code> argument rather than
+          writing to a file.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>6 &nbsp;Notebook updates — Batch CSV reader</h2>
+    <span class="badge badge-done">DONE</span>
+  </div>
+  <div class="section-body">
+    <p>Four cells across two notebooks were updated to consume the new batch format.</p>
+
+    <table>
+      <tr><th>Notebook</th><th>Cell ID</th><th>Function changed</th></tr>
+      <tr><td>result-summary.ipynb</td><td><code>647b3a69</code></td><td><code>load_post_data_all_steps()</code></td></tr>
+      <tr><td>result-summary.ipynb</td><td><code>35601fd5</code></td><td><code>load_and_process_seed()</code></td></tr>
+      <tr><td>polarization-analysis.ipynb</td><td><code>35601fd5</code></td><td><code>load_and_process_seed()</code></td></tr>
+      <tr><td>polarization-analysis.ipynb</td><td><code>05ea30e4</code></td><td><code>load_and_process_opinion_seed()</code></td></tr>
+    </table>
+
+    <h3>Pattern applied uniformly</h3>
+    <p>
+      All four functions previously used a <code>step_file_map</code> approach: they
+      extracted the step number from the single-step filename
+      (<code>post_result_123.csv</code>), read the single-row file, and took
+      <code>df.iloc[0]</code>.  The new pattern:
+    </p>
+    <pre><code><span class="diff-add"># Read all batch files and concatenate</span>
+<span class="diff-add">dfs = []</span>
+<span class="diff-add">for f in glob.glob(os.path.join(dir, "post_result_*.csv")):</span>
+<span class="diff-add">    try:</span>
+<span class="diff-add">        df_temp = pd.read_csv(f)</span>
+<span class="diff-add">        if not df_temp.empty: dfs.append(df_temp)</span>
+<span class="diff-add">    except: pass</span>
+<span class="diff-add">all_df = pd.concat(dfs).sort_values("step").reset_index(drop=True)</span>
+<span class="diff-add">for _, row in all_df.iterrows():</span>
+<span class="diff-add">    step = int(row["step"])</span>
+<span class="diff-add">    ...</span></code></pre>
+    <p>
+      The <code>MAX_INDEX</code> filter is applied after concatenation via boolean masking
+      rather than inside the file-selection loop, which is both cleaner and correct for
+      batch files that span a step range.
+    </p>
+    <p>
+      The glob pattern <code>post_result_*.csv</code> matches both the legacy single-step
+      names and the new range names (<code>post_result_0_999.csv</code>), ensuring
+      backward compatibility with any existing data.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <div class="section-header">
+    <h2>7 &nbsp;Deferred items (noted for future reports)</h2>
+    <span class="badge badge-defer">DEFERRED</span>
+  </div>
+  <div class="section-body">
+    <div class="note">
+      <strong>Note:</strong> The following issues were identified in the initial review
+      but are intentionally left unchanged at the user's request.  They should be
+      flagged in any future model report or sensitivity analysis.
+    </div>
+
+    <h3>7.1 — postProb and useProb are effectively frozen</h3>
+    <p>
+      In <code>Const.java</code>:
+    </p>
+    <pre><code>public static final double INITIAL_PU = 0.0025;
+public static final double MAX_PU = INITIAL_PU;   // = 0.0025
+public static final double MIN_PU = INITIAL_PU;   // = 0.0025</code></pre>
+    <p>
+      Because <code>MAX_PU == MIN_PU == INITIAL_PU</code>, the clamping in
+      <code>Agent.updateMyself()</code> pins <code>useProb</code> to exactly 0.0025
+      regardless of comfort-rate feedback.  The adaptive engagement mechanism is
+      mathematically present but numerically inert.  The same applies to
+      <code>postProb</code> where <code>MAX_PP = 1.0</code> and
+      <code>MIN_PP = 0.05</code> leave some room, but the initial value of 0.10 and a
+      zero post cost (<code>POST_COST = 0.0</code>) mean the effective dynamics depend
+      entirely on the multiplicative updates in <code>updateMyself()</code>.
+    </p>
+
+    <h3>7.2 — Comfort threshold uses MINIMUM_BC, not dynamic bc</h3>
+    <p>
+      In <code>Agent.updateMyself()</code>:
+    </p>
+    <pre><code>if (Math.abs(post.getPostOpinion() - this.opinion) &lt; Const.MINIMUM_BC) {
+    comfortPostNum++;
+}</code></pre>
+    <p>
+      This uses the <em>global floor</em> <code>MINIMUM_BC = 0.2</code> rather than
+      the agent's current dynamic <code>this.bc</code>, which can decay below 0.2 via
+      <code>bc *= BC_DEC_RATE</code> (note: the clamp at line 313 uses a
+      <code>Math.min(Const.MINIMUM_BC, 1.0)</code> which is always <code>MINIMUM_BC</code>,
+      effectively never raising bc — only the decay acts).  As a result, the
+      comfort rate is measured against a fixed window while the opinion update uses a
+      potentially narrower one, creating an asymmetry in the model's micro-logic.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>SNAM2026 &middot; Generated 2026-04-27</footer>
+</body>
+</html>

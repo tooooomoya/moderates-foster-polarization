@@ -22,7 +22,6 @@ public class Agent {
     private int timeStep;
     private boolean[] followList = new boolean[NUM_OF_AGENTS];
     private boolean[] unfollowList = new boolean[NUM_OF_AGENTS];
-    private int followerNum;
     private boolean used; // whether agent uses platform or not
     private int recievedLikeCount;
     private double repostProb;
@@ -107,10 +106,6 @@ public class Agent {
         return this.useProb;
     }
 
-    public int getFollwerNum() {
-        return this.followerNum;
-    }
-
     public PostCash getPostCash() {
         return this.postCash;
     }
@@ -163,7 +158,9 @@ public class Agent {
 
     public void setIntrinsicOpinion(double value) {
         this.intrinsicOpinion = value;
-        setStubbornness(calculateStubbornness(this.intrinsicOpinion));
+        this.stubbornness = calculateStubbornness(this.intrinsicOpinion);
+        this.opinion = this.intrinsicOpinion; // reset opinion to intrinsic when it is changed
+        setOpinionClass();
     }
 
     public void setNumOfPosts(int value) {
@@ -189,15 +186,6 @@ public class Agent {
         for (int i = 0; i < W.length; i++) {
             if (W[this.id][i] > 0.0) {
                 this.followList[i] = true;
-            }
-        }
-    }
-
-    public void setFollowerNum(double[][] W) {
-        this.followerNum = 0;
-        for (int i = 0; i < NUM_OF_AGENTS; i++) {
-            if (W[i][this.id] > 0.0) {
-                this.followerNum++;
             }
         }
     }
@@ -451,25 +439,6 @@ public class Agent {
         return new int[]{newFollowId, removeTargetId};
     }
 
-    /*public int follow() {
-        List<Integer> candidates = new ArrayList<>();
-
-        for (Post post : this.feed) {
-            if (Math.abs(post.getPostOpinion() - this.opinion) < this.bc && !this.followList[post.getPostUserId()]
-                    && !this.unfollowList[post.getPostUserId()]) {
-                candidates.add(post.getPostUserId());
-            }
-        }
-
-        if (!candidates.isEmpty() && randomGenerator.get().nextDouble() < Const.FOLLOW_PROB) {
-            int followId = candidates.get(randomGenerator.get().nextInt(candidates.size()));
-            this.followList[followId] = true;
-
-            return followId;
-        }
-        return -1;
-    }*/
-
     public int unfollow() {
         int followeeNum = 0;
         for (int i = 0; i < NUM_OF_AGENTS; i++) {
@@ -516,12 +485,6 @@ public class Agent {
         }
 
         return post;
-    }
-
-    public double decayFunc(double time) { // for the sake of convergence
-        double lambda = 0.0002;
-        //return Math.exp(-lambda * time);
-        return 1;
     }
 
 }

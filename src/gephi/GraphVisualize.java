@@ -159,6 +159,7 @@ public class GraphVisualize {
                 node.setAttribute("shiftedOpinion", agents[i].getOpinion() - agents[i].getIntrinsicOpinion());
                 node.setAttribute("intrinsicOpinion", agents[i].getIntrinsicOpinion());
                 node.setAttribute("bot", agents[i].getTarget());
+                node.setAttribute("stubbornness", agents[i].getStubbornness());
             }
         }
 

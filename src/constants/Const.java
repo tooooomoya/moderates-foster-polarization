@@ -37,7 +37,7 @@ public class Const {
     public static final double INCREMENT_PP = 0.1;
     public static final double DECREMENT_PP = INCREMENT_PP;
 
-    public static final double INITIAL_PU = 0.005; // Prob of Using platform (Accessing platform)
+    public static final double INITIAL_PU = 0.0025; // Prob of Using platform (Accessing platform)
     public static final double MAX_PU = INITIAL_PU;
     public static final double MIN_PU = INITIAL_PU;
     public static final double INCREMENT_PU = 0.01;
@@ -59,9 +59,10 @@ public class Const {
 
     // result data parameter
     public static final String[] RESULT_LIST = { "opinionVar", "postOpinionVar", "follow", "unfollow", "rewire", "opinionAvg",
+    "shannonIndex", "disagreement",
     "feedPostOpinionMean_0", "feedPostOpinionMean_1", "feedPostOpinionMean_2", "feedPostOpinionMean_3", "feedPostOpinionMean_4", "feedPostOpinionVar_0",
     "feedPostOpinionVar_1", "feedPostOpinionVar_2", "feedPostOpinionVar_3", "feedPostOpinionVar_4",
-    "cRateMean_0", "cRateMean_1", "cRateMean_2", "cRateMean_3", "cRateMean_4", "cRateVar_0", "cRateVar_1", "cRateVar_2", "cRateVar_3", "cRateVar_4", 
+    "cRateMean_0", "cRateMean_1", "cRateMean_2", "cRateMean_3", "cRateMean_4", "cRateVar_0", "cRateVar_1", "cRateVar_2", "cRateVar_3", "cRateVar_4",
     "highComfortRateNum_0", "highComfortRateNum_1", "highComfortRateNum_2", "highComfortRateNum_3", "highComfortRateNum_4"};
     public static String RESULT_FOLDER_PATH = "results";
     public static final int NUM_OF_BINS_OF_POSTS = 5; // % of bins of opinions in posts for analysis
