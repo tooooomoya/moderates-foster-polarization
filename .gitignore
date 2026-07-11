@@ -4,3 +4,4 @@ venv/
 *.log
 *.png
 *.gif
+/node_modules/
